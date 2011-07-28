@@ -1,0 +1,6 @@
+https://svnserver:444/svn/Foundry/Thirdparty/scons-1.2.0.zip
+os "linux", "mac":
+  https://svnserver:444/svn/Foundry/Thirdparty/unixdeps-1.0-0.zip
+os "win":
+  https://svnserver:444/svn/Foundry/Thirdparty/windeps-1.0-0.zip
+https://svnserver:444/svn/Foundry/Thirdparty/quicktime-7.0.0.zip
