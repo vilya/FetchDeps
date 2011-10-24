@@ -4,7 +4,6 @@
 // Functions
 //
 
-
 int main(int argc, char** argv)
 {
   char* fname = (argc > 1) ? argv[1] : "default.deps";
@@ -14,5 +13,8 @@ int main(int argc, char** argv)
   success = Parse(ctx);
   Close(ctx);
 
-  return success;
+  if (success)
+    return 0;
+  else
+    return 1;
 }
