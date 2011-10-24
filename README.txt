@@ -153,3 +153,16 @@ instead of my custom horrible handwritten one...
 
 It might also be a good idea to switch to dynamic allocation for the variable
 lists, simply because sooner or later someone is bound to hit those limits.
+
+We'll need a way to configure, per-project, where dependencies get stored. We
+should be able to sue this to automatically figure out a local filename for
+each dependency. The things we'll want to configure are:
+- Whether we unzip dependencies into the same location, or a separate location.
+  If we use separate locations for each dep url, this will make it easier to
+  upgrade individual dependencies but will add complication to build scripts.
+  Maybe we could keep a list of the files added by each dependency, so that we
+  could uninstall exactly? --> Actually that would be good because we can flag
+  an error if two dependencies install the same file into the same location.
+- Where to store the unzipped dependencies.
+- Which folder to use as temporary storage while downloading and unzipping.
+
