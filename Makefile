@@ -1,13 +1,28 @@
 CC = gcc
 CFLAGS = -g -Wall -Werror -std=c99
+LD = gcc
+LDFLAGS = 
+
+SRC = src
+OBJ = build/obj
+BIN = bin
 
 OBJS = \
-  common.o \
-  main.o \
-  parse.o
+  $(OBJ)/common.o \
+  $(OBJ)/main.o \
+  $(OBJ)/parse.o
 
-deps: $(OBJS)
-	$(CC) -o $@ $(CFLAGS) $^
+
+$(BIN)/deps: $(OBJS)
+	$(LD) -o $@ $(LDFLAGS) $^
+
+$(OBJ)/%.o: $(SRC)/%.c
+	$(CC) -o $@ -c $(CFLAGS) $<
+
+.PHONY: dirs
+dirs:
+	@mkdir -p $(OBJ)
+	@mkdir -p $(BIN)
 
 clean:
-	rm -f deps *.o
+	rm -rf $(BIN) $(OBJ)
