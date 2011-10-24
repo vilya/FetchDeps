@@ -13,6 +13,9 @@ OBJS = \
   $(OBJ)/parse.o
 
 
+.PHONY: default
+default: dirs $(BIN)/deps
+
 $(BIN)/deps: $(OBJS)
 	$(LD) -o $@ $(LDFLAGS) $^
 
@@ -25,4 +28,4 @@ dirs:
 	@mkdir -p $(BIN)
 
 clean:
-	rm -rf $(BIN) $(OBJ)
+	rm -rf $(BIN) build
