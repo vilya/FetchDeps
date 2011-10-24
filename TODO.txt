@@ -1,6 +1,10 @@
 To do
 -----
 
+- Search back up through the parent directories to find a deps file, if none is
+  specified on the command line and default.deps isn't in the current
+  directory.
+
 - Download dependencies using libcurl. Make sure to handle (at least) http,
   https, ftp and file protocols.
 

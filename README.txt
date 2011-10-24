@@ -8,7 +8,7 @@ particular URL don't change over tuime.
 The deps are described by a simple structured text file (format described
 below) which *is* versioned in git. We provide a tool which parses this file
 into a set of URLs, which it downloads one by one. If the URL points at a zip
-file, we'll unzip it automatically after downloading.
+file or tarball, we'll extract it automatically after downloading.
 
 
 Project structure
@@ -18,7 +18,7 @@ The project should have a root folder for all third party dependencies, which
 git is set to ignore. The dependencies will be unzipped in here after
 downloading.
 
-A good structure would look like
+A good structure would look something like
 
   Project/
     ... project specific stuff ...
