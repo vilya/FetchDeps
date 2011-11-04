@@ -39,6 +39,28 @@ fetchdeps_stringset_new()
 }
 
 
+stringset_t*
+fetchdeps_stringset_new_single(char* str)
+{
+  stringset_t* ss = (stringset_t*)malloc(sizeof(stringset_t));
+  if (!ss)
+    goto failure;
+
+  ss->str = NULL;
+  ss->next = ss;
+
+  if (!fetchdeps_stringset_add(ss, str))
+    goto failure;
+
+  return ss;
+
+failure:
+  if (ss)
+    free(ss);
+  return NULL;
+}
+
+
 void
 fetchdeps_stringset_free(stringset_t* ss)
 {
@@ -58,7 +80,7 @@ fetchdeps_stringset_free(stringset_t* ss)
 }
 
 
-void
+bool_t
 fetchdeps_stringset_add(stringset_t* ss, char* str)
 {
   stringset_t* prev;
@@ -75,17 +97,33 @@ fetchdeps_stringset_add(stringset_t* ss, char* str)
     curr = curr->next;
   }
   if (curr != ss)
-    return;
+    return 1;
 
   // If we got here, we're adding a new string.
   curr = (stringset_t*)malloc(sizeof(stringset_t));
+  if (!curr)
+    goto failure;
+
   curr->str = strdup(str);
+  if (!curr->str)
+    goto failure;
+  
   curr->next = ss;
   prev->next = curr;
+
+  return 1;
+
+failure:
+  if (curr) {
+    if (curr->str)
+      free(curr->str);
+    free(curr);
+  }
+  return 0;
 }
 
 
-void
+bool_t
 fetchdeps_stringset_add_all(stringset_t* dst, stringset_t* src)
 {
   stringset_t* src_pos;

@@ -20,10 +20,11 @@ typedef struct _stringiter stringiter_t;
 //
 
 stringset_t*  fetchdeps_stringset_new();
+stringset_t*  fetchdeps_stringset_new_single(char* str);
 void          fetchdeps_stringset_free(stringset_t* ss);
 
-void          fetchdeps_stringset_add(stringset_t* ss, char* str);
-void          fetchdeps_stringset_add_all(stringset_t* dst, stringset_t* src);
+bool_t        fetchdeps_stringset_add(stringset_t* ss, char* str);
+bool_t        fetchdeps_stringset_add_all(stringset_t* dst, stringset_t* src);
 
 bool_t        fetchdeps_stringset_contains(stringset_t* ss, char* str);
 bool_t        fetchdeps_stringset_contains_any(stringset_t* haystack, stringset_t* needles);
