@@ -4,6 +4,7 @@
 #include "common.h"
 #include "parse.h"
 #include "stringset.h"
+#include "varmap.h"
 #include <stdio.h>
 
 int yylex();
@@ -57,23 +58,26 @@ start:
 
 
 str_value:
-    STR                   { $$ = fetchdeps_stringset_new();
-                            fetchdeps_stringset_add($$, $1); }
-  | str_value COMMA STR   { fetchdeps_stringset_add($1, $3);
-                            $$ = $1; }
+    STR                   { $$ = fetchdeps_stringset_new_single($1); }
+  | str_value COMMA STR   { $$ = $1; fetchdeps_stringset_add($$, $3); }
   ;
 
 
 var_value:
-    VAR     { $$ = NULL/* TODO: get the value of the variable from the parser context */; }
+    VAR     { $$ = fetchdeps_varmap_get(gContext->vars, $1);
+              if (!$$) {
+                fprintf(stderr, "missing variable: %s\n", $1);
+                YYERROR;
+              }
+            }
   ;
 
 
 relation:
-    var_value str_value       { $$ = fetchdeps_stringset_contains_any($2, $1); }
-  | var_value NOT str_value   { $$ = !fetchdeps_stringset_contains_any($3, $1); }
-  | var_value EQ str_value    { $$ = fetchdeps_stringset_contains_any($3, $1); }
-  | var_value NE str_value    { $$ = !fetchdeps_stringset_contains_any($3, $1); }
+    var_value str_value       { $$ = fetchdeps_stringset_contains_any($1, $2); }
+  | var_value NOT str_value   { $$ = !fetchdeps_stringset_contains_any($1, $3); }
+  | var_value EQ str_value    { $$ = fetchdeps_stringset_contains_any($1, $3); }
+  | var_value NE str_value    { $$ = !fetchdeps_stringset_contains_any($1, $3); }
   ;
 
 
