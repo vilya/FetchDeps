@@ -8,7 +8,7 @@
 #include "conditions.tab.h"
 
 // TODO: this should probably go in the .y file instead.
-parser_t* gContext = NULL;
+parser_t* g_ctx = NULL;
 %}
 
 %option noyywrap
@@ -41,13 +41,13 @@ NL    \n\r?" "*
 
 {NL}    {
           int len = (yytext[1] == '\r') ? strlen(yytext + 2) : strlen(yytext + 1);
-          if (len > gContext->indents[gContext->indent_level]) {
-            gContext->indents[++gContext->indent_level] = len;
+          if (len > g_ctx->indents[g_ctx->indent_level]) {
+            g_ctx->indents[++g_ctx->indent_level] = len;
             return INDENT;
           }
-          else if (len < gContext->indents[gContext->indent_level]) {
+          else if (len < g_ctx->indents[g_ctx->indent_level]) {
             yyless(0);
-            --gContext->indent_level;
+            --g_ctx->indent_level;
             return DEDENT;
           }
           else {
@@ -61,7 +61,7 @@ NL    \n\r?" "*
 
 bool_t fetchdeps_parser_parse(parser_t* ctx)
 {
-  gContext = ctx;
+  g_ctx = ctx;
   yyin = ctx->f;
   yyparse();
   return 1;

@@ -10,7 +10,7 @@
 int yylex();
 void yyerror(const char* s);
 
-extern parser_t* gContext;
+extern parser_t* g_ctx;
 %}
 
 %union {
@@ -64,7 +64,7 @@ str_value:
 
 
 var_value:
-    VAR     { $$ = fetchdeps_varmap_get(gContext->vars, $1);
+    VAR     { $$ = fetchdeps_varmap_get(g_ctx->vars, $1);
               if (!$$) {
                 fprintf(stderr, "missing variable: %s\n", $1);
                 YYERROR;
