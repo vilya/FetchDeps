@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -std=c99
+CFLAGS = -g
 LD = gcc
 LDFLAGS = 
 
@@ -16,6 +16,7 @@ OBJS = \
   $(OBJ)/main.o \
   $(OBJ)/parse.o \
   $(OBJ)/stringset.o \
+  $(OBJ)/varmap.o \
   $(GENOBJ)/conditions.tab.o \
   $(GENOBJ)/conditions.yy.o
 
