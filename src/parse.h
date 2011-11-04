@@ -7,18 +7,6 @@
 
 
 //
-// Constants
-//
-
-#define kMaxLineLen 4096
-#define kMaxIndents 128
-#define kMaxVariables 128
-#define kMaxVarNameLen 1024
-#define kMaxValues 128
-#define kMaxValueLen 256
-
-
-//
 // Types
 //
 
