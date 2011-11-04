@@ -15,6 +15,7 @@ OBJS = \
   $(OBJ)/common.o \
   $(OBJ)/main.o \
   $(OBJ)/parse.o \
+  $(OBJ)/stringset.o \
   $(GENOBJ)/conditions.tab.o \
   $(GENOBJ)/conditions.yy.o
 
