@@ -42,7 +42,6 @@ ParserContext* Open(char* fname)
   ctx->end = -1;
   ctx->indentLevel = 0;
   ctx->skipLevel = -1;
-  ctx->expectingIndent = False;
 
   ctx->numVars = 0;
 
