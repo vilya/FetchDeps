@@ -17,23 +17,6 @@
 
 
 //
-// Forward declarations
-//
-
-static Bool IdentifierChar(char ch);
-static void Error(ParserContext* ctx, char* format, ...);
-static void Info(ParserContext* ctx, char* format, ...);
-static int FindVariable(ParserContext* ctx, const char* varName);
-static Bool HasValue(ParserContext* ctx, int varIndex, const char* value);
-static Bool ReadLine(ParserContext* ctx);
-static void HandleIndentation(ParserContext* ctx);
-static Bool IgnorableLine(ParserContext* ctx);
-static Bool SkippableLine(ParserContext* ctx);
-static Bool EndsWith(ParserContext* ctx, char ch);
-static Bool HandleCondition(ParserContext* ctx, int next);
-
-
-//
 // Public functions
 //
 
@@ -122,13 +105,7 @@ void AddValue(ParserContext* ctx, int varIndex, const char* value)
 // Private functions
 //
 
-static Bool IdentifierChar(char ch)
-{
-  return isalnum(ch) || ch == '_' || ch == '-';
-}
-
-
-static void Error(ParserContext* ctx, char* format, ...)
+void Error(ParserContext* ctx, char* format, ...)
 {
   va_list args;
 
@@ -143,7 +120,7 @@ static void Error(ParserContext* ctx, char* format, ...)
 }
 
 
-static void Info(ParserContext* ctx, char* format, ...)
+void Info(ParserContext* ctx, char* format, ...)
 {
   va_list args;
 
@@ -157,7 +134,7 @@ static void Info(ParserContext* ctx, char* format, ...)
 }
 
 
-static int FindVariable(ParserContext* ctx, const char* varName)
+int FindVariable(ParserContext* ctx, const char* varName)
 {
   int i;
   for (i = 0; i < ctx->numVars; ++i) {
@@ -168,7 +145,7 @@ static int FindVariable(ParserContext* ctx, const char* varName)
 }
 
 
-static Bool HasValue(ParserContext* ctx, int varIndex, const char* value)
+Bool HasValue(ParserContext* ctx, int varIndex, const char* value)
 {
   int i;
   for (i = 0; i < ctx->numValues[varIndex]; ++i) {
@@ -179,105 +156,7 @@ static Bool HasValue(ParserContext* ctx, int varIndex, const char* value)
 }
 
 
-static Bool ReadLine(ParserContext* ctx)
-{
-  ++ctx->lineNum;
-  if (fgets(ctx->lineBuf, kMaxLineLen, ctx->f)) {
-    // Strips trailing whitespace.
-    ctx->end = strlen(ctx->lineBuf);
-    while (ctx->end > 0 && isspace(ctx->lineBuf[ctx->end - 1]))
-      ctx->lineBuf[--ctx->end] = '\0';
-    return True;
-  }
-  else {
-    ctx->end = -1;
-    return False;
-  }
-}
-
-
-static void HandleIndentation(ParserContext* ctx)
-{
-  // Find how far this line is indented.
-  ctx->start = 0;
-  while (ctx->lineBuf[ctx->start] == ' ')
-    ++ctx->start;
-
-  // If the line is blank, or comment-only, we can skip it. Otherwise... we have work to do!
-  if (ctx->lineBuf[ctx->start] == '\0' && ctx->lineBuf[ctx->start] == '#')
-   ctx->start = -1;
-
-  // If the ctx->start is increasing....
-  if (ctx->start > ctx->indents[ctx->indentLevel]) {
-    // Check that we're actually expecting an indentation here.
-    if (!ctx->expectingIndent)
-      Error(ctx, "unexpected indentation");
-
-    // Make sure we don't overflow the indents stack.
-    if (ctx->indentLevel == (kMaxIndents - 1))
-      Error(ctx, "too many levels of indentation (maximum is %d)", kMaxIndents);
-
-    ctx->expectingIndent = False;
-    ++ctx->indentLevel;
-    ctx->indents[ctx->indentLevel] = ctx->start;
-  }
-  // Otherwise if the indent is staying the same
-  else if (ctx->start == ctx->indents[ctx->indentLevel]) {
-    if (ctx->expectingIndent)
-      Error(ctx, "was expecting the line to be indented");
-  }
-  // Otherwise the indent must be decreasing... but by how much?
-  else {
-    if (ctx->expectingIndent)
-      Error(ctx, "expecting an indent but got an un-indent");
-
-    while (ctx->start < ctx->indents[ctx->indentLevel]) {
-      // Make sure we don't underflow the indents stack.
-      if (ctx->indentLevel == 0)
-        Error(ctx, "too many levels of unindentation. Are you missing a condition line?");
-
-      --ctx->indentLevel;
-    }
-
-    // Make sure the unindent matches the previous indentation level
-    if (ctx->start != ctx->indents[ctx->indentLevel])
-      Error(ctx, "bad unindent, doesn't align with an earlier indentation level");
-
-    // Now check if we've finished skipping stuff.
-    if (ctx->indentLevel <= ctx->skipLevel)
-      ctx->skipLevel = -1;
-  }
-}
-
-
-static Bool IgnorableLine(ParserContext* ctx)
-{
-  Bool emptyLine, commentLine;
-
-  emptyLine = ctx->start < 0 || ctx->end <= ctx->start;
-  if (emptyLine)
-    return True;
-
-  commentLine = ctx->lineBuf[ctx->start] == '#';
-  if (commentLine)
-    return True;
-
-  return False;
-}
-
-
-static Bool SkippableLine(ParserContext* ctx)
-{
-  return (ctx->skipLevel >= 0 && ctx->indentLevel >ctx->skipLevel);
-}
-
-
-static Bool EndsWith(ParserContext* ctx, char ch)
-{
-  return (ctx->end > 0) && (ctx->lineBuf[ctx->end - 1] == ch);
-}
-
-
+/*
 static Bool HandleCondition(ParserContext* ctx, int next)
 {
   char varName[kMaxVarNameLen];
@@ -354,4 +233,4 @@ static Bool HandleCondition(ParserContext* ctx, int next)
   ctx->expectingIndent = True;
   return result;
 }
-
+*/
