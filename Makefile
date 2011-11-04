@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -Werror -std=c99
+CFLAGS = -g -std=c99
 LD = gcc
 LDFLAGS = 
 
@@ -29,7 +29,7 @@ $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) -o $@ -c $(CFLAGS) $<
 
 $(GENOBJ)/%.o: $(GENSRC)/%.c
-	$(CC) -o $@ -c $(CFLAGS) $<
+	$(CC) -o $@ -c -I$(SRC) $(CFLAGS) $<
 
 $(GENSRC)/conditions.tab.h $(GENSRC)/conditions.tab.c: $(SRC)/conditions.y
 	bison --defines -o $(GENSRC)/conditions.tab.c $<

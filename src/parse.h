@@ -3,11 +3,43 @@
 
 #include "common.h"
 
+#include <stdio.h>
+
+
+//
+// Constants
+//
+
+#define kMaxLineLen 4096
+#define kMaxIndents 128
+#define kMaxVariables 128
+#define kMaxVarNameLen 1024
+#define kMaxValues 128
+#define kMaxValueLen 256
+
+
 //
 // Types
 //
 
-struct SParserContext;
+struct SParserContext {
+  FILE* f;
+
+  int lineNum;
+  int start;    // Index of first non-space char in the lineBuf
+  int end;      // Index of the null char in the lineBuf
+  int indentLevel;
+  int skipLevel;    // The indent level that we start skipping at. Skipping stops when a de-indent brings us back to this level.
+  Bool expectingIndent;
+
+  char lineBuf[kMaxLineLen];
+  int indents[kMaxIndents];
+
+  int numVars;
+  int numValues[kMaxVariables];
+  char varNames[kMaxVariables][kMaxVarNameLen];
+  char varValues[kMaxVariables][kMaxValues][kMaxValueLen];
+};
 typedef struct SParserContext ParserContext;
 
 
@@ -17,10 +49,12 @@ typedef struct SParserContext ParserContext;
 
 ParserContext* Open(char* fname);
 void Close(ParserContext* ctx);
+
+void SetBuiltinVariables(ParserContext* ctx);
 int AddVariable(ParserContext* ctx, const char* varName);
 void AddValue(ParserContext* ctx, int varIndex, const char* value);
-Bool Parse(ParserContext* ctx);
 
+Bool Parse(ParserContext* ctx);
 
 #endif // fetchdeps_parse_h
 

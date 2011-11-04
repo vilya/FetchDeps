@@ -2,7 +2,6 @@
 
 #include <ctype.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -18,42 +17,6 @@
 
 
 //
-// Constants
-//
-
-#define kMaxLineLen 4096
-#define kMaxIndents 128
-#define kMaxVariables 128
-#define kMaxVarNameLen 1024
-#define kMaxValues 128
-#define kMaxValueLen 256
-
-
-//
-// Structs
-//
-
-struct SParserContext {
-  FILE* f;
-
-  int lineNum;
-  int start;    // Index of first non-space char in the lineBuf
-  int end;      // Index of the null char in the lineBuf
-  int indentLevel;
-  int skipLevel;    // The indent level that we start skipping at. Skipping stops when a de-indent brings us back to this level.
-  Bool expectingIndent;
-
-  char lineBuf[kMaxLineLen];
-  int indents[kMaxIndents];
-
-  int numVars;
-  int numValues[kMaxVariables];
-  char varNames[kMaxVariables][kMaxVarNameLen];
-  char varValues[kMaxVariables][kMaxValues][kMaxValueLen];
-};
-
-
-//
 // Forward declarations
 //
 
@@ -62,7 +25,6 @@ static void Error(ParserContext* ctx, char* format, ...);
 static void Info(ParserContext* ctx, char* format, ...);
 static int FindVariable(ParserContext* ctx, const char* varName);
 static Bool HasValue(ParserContext* ctx, int varIndex, const char* value);
-static void SetBuiltinVariables(ParserContext* ctx);
 static Bool ReadLine(ParserContext* ctx);
 static void HandleIndentation(ParserContext* ctx);
 static Bool IgnorableLine(ParserContext* ctx);
@@ -113,6 +75,18 @@ void Close(ParserContext* ctx)
 }
 
 
+void SetBuiltinVariables(ParserContext* ctx)
+{
+  int osIndex, bitsIndex;
+
+  osIndex = AddVariable(ctx, "os");
+  AddValue(ctx, osIndex, kOperatingSystem);
+
+  bitsIndex = AddVariable(ctx, "bits");
+  AddValue(ctx, bitsIndex, "64");
+}
+
+
 int AddVariable(ParserContext* ctx, const char* varName)
 {
   int index;
@@ -141,45 +115,6 @@ void AddValue(ParserContext* ctx, int varIndex, const char* value)
   CopyStr(ctx->varValues[varIndex][valIndex], value, kMaxValueLen - 1);
 
   ctx->numValues[varIndex]++;
-}
-
-
-Bool Parse(ParserContext* ctx)
-{
-  int next;
-
-  SetBuiltinVariables(ctx);
-
-  while (ReadLine(ctx)) {
-    HandleIndentation(ctx);
-    if (IgnorableLine(ctx))
-      continue;
-    if (SkippableLine(ctx)) {
-      if (EndsWith(ctx, ':'))
-        ctx->expectingIndent = True;
-      continue;
-    }
-
-    ctx->expectingIndent = False;
-    next = ctx->start;
-    while (IdentifierChar(ctx->lineBuf[next]))
-      ++next;
-
-    if (next > ctx->start && ctx->lineBuf[next] == ':') {
-      // It looks like a URL...
-      Info(ctx, "%s", &ctx->lineBuf[ctx->start]);
-    }
-    else if (next > ctx->start && isspace(ctx->lineBuf[next])) {
-      // It looks like a variable name...
-      HandleCondition(ctx, next);
-    }
-    else {
-      // Looks like an error.
-      Error(ctx, "unexpected character '%c'", ctx->lineBuf[next]);
-      return False;
-    }
-  }
-  return True;
 }
 
 
@@ -241,18 +176,6 @@ static Bool HasValue(ParserContext* ctx, int varIndex, const char* value)
       return True;
   }
   return False;
-}
-
-
-static void SetBuiltinVariables(ParserContext* ctx)
-{
-  int osIndex, bitsIndex;
-
-  osIndex = AddVariable(ctx, "os");
-  AddValue(ctx, osIndex, kOperatingSystem);
-
-  bitsIndex = AddVariable(ctx, "bits");
-  AddValue(ctx, bitsIndex, "64");
 }
 
 

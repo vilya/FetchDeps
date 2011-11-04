@@ -2,9 +2,10 @@
 
 %{
 #include "conditions.tab.h"
+#include "parse.h"
 
-int indents[100] = { 0 };
-int curr_indent = 0;
+// TODO: this should probably go in the .y file instead.
+ParserContext* gContext = NULL;
 %}
 
 %option noyywrap
@@ -44,13 +45,13 @@ NL    \n\r?" "*
 
 {NL}    {
           int len = (yytext[1] == '\r') ? strlen(yytext + 2) : strlen(yytext + 1);
-          if (len > indents[curr_indent]) {
-            indents[++curr_indent] = len;
+          if (len > gContext->indents[gContext->indentLevel]) {
+            gContext->indents[++gContext->indentLevel] = len;
             return INDENT;
           }
-          else if (len < indents[curr_indent]) {
+          else if (len < gContext->indents[gContext->indentLevel]) {
             yyless(0);
-            --curr_indent;
+            --gContext->indentLevel;
             return DEDENT;
           }
           else {
@@ -62,19 +63,11 @@ NL    \n\r?" "*
 
 %%
 
-int main(int argc, char** argv)
+Bool Parse(ParserContext* ctx)
 {
-  memset(indents, 0, sizeof(indents));
-  if (argc > 1)
-    yyin = fopen(argv[1], "r");
-  else
-    yyin = stdin;
-
+  gContext = ctx;
+  yyin = ctx->f;
   yyparse();
-
-  printf("\n");
-  if (yyin != stdin)
-    fclose(yyin);
-
-  return 0;
+  return True;
 }
+
