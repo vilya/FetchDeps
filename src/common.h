@@ -14,21 +14,14 @@
   #define kOperatingSystem  "mac"
 #endif
 
-#define kMaxLineLen 4096
-#define kMaxIndents 128
-#define kMaxVariables 128
-#define kMaxVarNameLen 1024
-#define kMaxValues 128
-#define kMaxValueLen 256
-
 
 //
 // Typedefs
 //
 
-typedef int Bool;
-static const Bool False = 0;
-static const Bool True = ~0;
+typedef int bool_t;
+static const bool_t False = 0;
+static const bool_t True = ~0;
 
 
 //
