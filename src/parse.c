@@ -23,12 +23,12 @@
 // Public functions
 //
 
-ParserContext*
+parser_t*
 fetchdeps_parser_new(char* fname)
 {
-  ParserContext* ctx = NULL;
+  parser_t* ctx = NULL;
 
-  ctx = (ParserContext*)calloc(1, sizeof(ParserContext));
+  ctx = (parser_t*)calloc(1, sizeof(parser_t));
   if (!ctx)
     goto failure;
 
@@ -61,7 +61,7 @@ failure:
 
 
 void 
-fetchdeps_parser_free(ParserContext* ctx)
+fetchdeps_parser_free(parser_t* ctx)
 {
   if (ctx->f)
     fclose(ctx->f);
@@ -72,7 +72,7 @@ fetchdeps_parser_free(ParserContext* ctx)
 
 
 bool_t
-fetchdeps_parser_initvars(ParserContext* ctx)
+fetchdeps_parser_initvars(parser_t* ctx)
 {
   int osIndex, bitsIndex;
 
@@ -88,7 +88,7 @@ fetchdeps_parser_initvars(ParserContext* ctx)
 
 
 void
-fetchdeps_parser_error(ParserContext* ctx, char* format, ...)
+fetchdeps_parser_error(parser_t* ctx, char* format, ...)
 {
   va_list args;
 
@@ -104,7 +104,7 @@ fetchdeps_parser_error(ParserContext* ctx, char* format, ...)
 
 
 void
-fetchdeps_parser_info(ParserContext* ctx, char* format, ...)
+fetchdeps_parser_info(parser_t* ctx, char* format, ...)
 {
   va_list args;
 

@@ -23,7 +23,7 @@
 // Types
 //
 
-struct SParserContext {
+struct _parser {
   FILE* f;
 
   int lineNum;
@@ -36,26 +36,26 @@ struct SParserContext {
 
   varmap_t* vars;
 };
-typedef struct SParserContext ParserContext;
+typedef struct _parser parser_t;
 
 
 //
 // Public functions
 //
 
-ParserContext* fetchdeps_parser_new(char* fname);
-void fetchdeps_parser_free(ParserContext* ctx);
+parser_t* fetchdeps_parser_new(char* fname);
+void fetchdeps_parser_free(parser_t* ctx);
 
-bool_t fetchdeps_parser_initvars(ParserContext* ctx);
-bool_t fetchdeps_parser_parse(ParserContext* ctx);
+bool_t fetchdeps_parser_initvars(parser_t* ctx);
+bool_t fetchdeps_parser_parse(parser_t* ctx);
 
 
 //
 // Functions for use inside the parser
 //
 
-void fetchdeps_parser_error(ParserContext* ctx, char* format, ...);
-void fetchdeps_parser_info(ParserContext* ctx, char* format, ...);
+void fetchdeps_parser_error(parser_t* ctx, char* format, ...);
+void fetchdeps_parser_info(parser_t* ctx, char* format, ...);
 
 #endif // fetchdeps_parse_h
 

@@ -10,7 +10,7 @@
 int yylex();
 void yyerror(const char* s);
 
-extern ParserContext* gContext;
+extern parser_t* gContext;
 %}
 
 %union {

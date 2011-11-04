@@ -8,7 +8,7 @@
 #include "conditions.tab.h"
 
 // TODO: this should probably go in the .y file instead.
-ParserContext* gContext = NULL;
+parser_t* gContext = NULL;
 %}
 
 %option noyywrap
@@ -59,7 +59,7 @@ NL    \n\r?" "*
 
 %%
 
-bool_t fetchdeps_parser_parse(ParserContext* ctx)
+bool_t fetchdeps_parser_parse(parser_t* ctx)
 {
   gContext = ctx;
   yyin = ctx->f;

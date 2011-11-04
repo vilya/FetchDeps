@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
   char* fname;
   bool_t success;
-  ParserContext* ctx = NULL;
+  parser_t* ctx = NULL;
 
   fname = (argc > 1) ? argv[1] : "default.deps";
   ctx = fetchdeps_parser_new(fname);
