@@ -29,10 +29,6 @@ extern ParserContext* gContext;
 %token OR
 %token NOT
 
-%token LT
-%token LE
-%token GT
-%token GE
 %token EQ
 %token NE
 
@@ -40,6 +36,9 @@ extern ParserContext* gContext;
 %token DEDENT
 %token COLON
 %token NEWLINE
+
+%type <str_val> str_value
+%type <int_val> int_value
 
 %error-verbose
 
@@ -62,33 +61,32 @@ int_value:
   ;
 
 
-value:
-    int_value
-  | str_value
+int_relation:
+    VAR int_value
+  | VAR NOT int_value
+  | VAR EQ int_value
+  | VAR NE int_value
   ;
 
 
-relational_clause:
-    VAR value
-  | VAR EQ value
-  | VAR NE value
-  | VAR LT value
-  | VAR LE value
-  | VAR GT value
-  | VAR GE value
+str_relation:
+    VAR str_value
+  | VAR NOT str_value
+  | VAR EQ str_value
+  | VAR NE str_value
   ;
 
 
-negatable_clause:
-    relational_clause
-  | NOT relational_clause
+relation:
+    int_relation
+  | str_relation
   ;
 
 
 logical_clause:
-    negatable_clause
-  | logical_clause AND negatable_clause
-  | logical_clause OR negatable_clause
+    relation
+  | logical_clause AND relation
+  | logical_clause OR relation
   ;
 
 

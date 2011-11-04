@@ -27,10 +27,6 @@ NL    \n\r?" "*
 
 "="     { return EQ; }
 "!="    { return NE; }
-"<="    { return LE; }
-"<"     { return LT; }
-">="    { return GE; }
-">"     { return GT; }
 
 ","     { return COMMA; }
 ":"     { return COLON; }
