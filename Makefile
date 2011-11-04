@@ -12,7 +12,6 @@ BIN = bin
 
 
 OBJS = \
-  $(OBJ)/common.o \
   $(OBJ)/main.o \
   $(OBJ)/parse.o \
   $(OBJ)/stringset.o \

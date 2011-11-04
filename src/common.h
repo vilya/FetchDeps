@@ -24,11 +24,5 @@ static const bool_t False = 0;
 static const bool_t True = ~0;
 
 
-//
-// Functions
-//
-
-int CopyStr(char* to, const char* from, int numChars);
-
 #endif // fetchdeps_common_h
 
