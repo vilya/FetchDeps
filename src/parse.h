@@ -12,14 +12,12 @@
 //
 
 struct _parser {
-  FILE* f;
-
-  int indentLevel;  // Index of the current indent level in the indents array.
-  int skipLevel;    // The indent level we start skipping at. We stop when a de-indent brings us back to this level.
-
+  int indent_level; // Index of the current indent level in the indents array.
+  int skip_level;   // The indent level we start skipping at. We stop when a de-indent brings us back to this level.
   int indents[100]; // Ought to be enough for anybody...
 
   varmap_t* vars;
+  FILE* f;
 };
 typedef struct _parser parser_t;
 

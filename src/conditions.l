@@ -41,13 +41,13 @@ NL    \n\r?" "*
 
 {NL}    {
           int len = (yytext[1] == '\r') ? strlen(yytext + 2) : strlen(yytext + 1);
-          if (len > gContext->indents[gContext->indentLevel]) {
-            gContext->indents[++gContext->indentLevel] = len;
+          if (len > gContext->indents[gContext->indent_level]) {
+            gContext->indents[++gContext->indent_level] = len;
             return INDENT;
           }
-          else if (len < gContext->indents[gContext->indentLevel]) {
+          else if (len < gContext->indents[gContext->indent_level]) {
             yyless(0);
-            --gContext->indentLevel;
+            --gContext->indent_level;
             return DEDENT;
           }
           else {
