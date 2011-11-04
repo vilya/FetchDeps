@@ -39,9 +39,6 @@ fetchdeps_parser_new(char* fname)
   if (!ctx->f)
     goto failure;
 
-  ctx->lineNum = 0;
-  ctx->start = -1;
-  ctx->end = -1;
   ctx->indentLevel = 0;
   ctx->skipLevel = -1;
 

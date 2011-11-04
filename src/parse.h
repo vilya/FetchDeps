@@ -14,11 +14,8 @@
 struct _parser {
   FILE* f;
 
-  int lineNum;
-  int start;    // Index of first non-space char in the lineBuf
-  int end;      // Index of the null char in the lineBuf
-  int indentLevel;
-  int skipLevel;    // The indent level we start skipping at. Skipping stops when a de-indent brings us back to this level.
+  int indentLevel;  // Index of the current indent level in the indents array.
+  int skipLevel;    // The indent level we start skipping at. We stop when a de-indent brings us back to this level.
 
   int indents[100]; // Ought to be enough for anybody...
 
