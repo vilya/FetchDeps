@@ -1,8 +1,11 @@
 /* Lex compound logical expressions. */
 
 %{
-#include "conditions.tab.h"
 #include "parse.h"
+#include "stringset.h"
+#include "varmap.h"
+
+#include "conditions.tab.h"
 
 // TODO: this should probably go in the .y file instead.
 ParserContext* gContext = NULL;
