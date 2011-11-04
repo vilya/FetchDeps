@@ -2,6 +2,7 @@
 
 #include "stringset.h"
 
+#include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -84,7 +85,7 @@ void SetBuiltinVariables(ParserContext* ctx)
 // Private functions
 //
 
-void Error(ParserContext* ctx, char* format, ...)
+void fetchdeps_parse_error(ParserContext* ctx, char* format, ...)
 {
   va_list args;
 
@@ -99,7 +100,7 @@ void Error(ParserContext* ctx, char* format, ...)
 }
 
 
-void Info(ParserContext* ctx, char* format, ...)
+void fetchdeps_parse_info(ParserContext* ctx, char* format, ...)
 {
   va_list args;
 

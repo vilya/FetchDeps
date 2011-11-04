@@ -55,8 +55,8 @@ bool_t Parse(ParserContext* ctx);
 // Functions for use inside the parser
 //
 
-void Error(ParserContext* ctx, char* format, ...);
-void Info(ParserContext* ctx, char* format, ...);
+void fetchdeps_parse_error(ParserContext* ctx, char* format, ...);
+void fetchdeps_parse_info(ParserContext* ctx, char* format, ...);
 
 #endif // fetchdeps_parse_h
 
