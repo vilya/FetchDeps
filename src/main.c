@@ -10,6 +10,7 @@ int main(int argc, char** argv)
   bool_t success;
 
   ParserContext* ctx = Open(fname);
+  SetBuiltinVariables(ctx);
   success = Parse(ctx);
   Close(ctx);
 
