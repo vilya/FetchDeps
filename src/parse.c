@@ -23,7 +23,8 @@
 // Public functions
 //
 
-ParserContext* Open(char* fname)
+ParserContext*
+fetchdeps_parser_new(char* fname)
 {
   ParserContext* ctx = NULL;
 
@@ -59,7 +60,8 @@ failure:
 }
 
 
-void Close(ParserContext* ctx)
+void 
+fetchdeps_parser_free(ParserContext* ctx)
 {
   if (ctx->f)
     fclose(ctx->f);
@@ -69,23 +71,24 @@ void Close(ParserContext* ctx)
 }
 
 
-void SetBuiltinVariables(ParserContext* ctx)
+bool_t
+fetchdeps_parser_initvars(ParserContext* ctx)
 {
   int osIndex, bitsIndex;
 
   assert(ctx != NULL);
   assert(ctx->vars != NULL);
 
-  fetchdeps_varmap_set_single(ctx->vars, "os", kOperatingSystem);
-  fetchdeps_varmap_set_single(ctx->vars, "bits", "64");
+  if (!fetchdeps_varmap_set_single(ctx->vars, "os", kOperatingSystem))
+    return 0;
+
+  if (!fetchdeps_varmap_set_single(ctx->vars, "bits", "64"))
+    return 0;
 }
 
 
-//
-// Private functions
-//
-
-void fetchdeps_parse_error(ParserContext* ctx, char* format, ...)
+void
+fetchdeps_parser_error(ParserContext* ctx, char* format, ...)
 {
   va_list args;
 
@@ -100,7 +103,8 @@ void fetchdeps_parse_error(ParserContext* ctx, char* format, ...)
 }
 
 
-void fetchdeps_parse_info(ParserContext* ctx, char* format, ...)
+void
+fetchdeps_parser_info(ParserContext* ctx, char* format, ...)
 {
   va_list args;
 

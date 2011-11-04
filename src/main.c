@@ -6,16 +6,26 @@
 
 int main(int argc, char** argv)
 {
-  char* fname = (argc > 1) ? argv[1] : "default.deps";
+  char* fname;
   bool_t success;
+  ParserContext* ctx = NULL;
 
-  ParserContext* ctx = Open(fname);
-  SetBuiltinVariables(ctx);
-  success = Parse(ctx);
-  Close(ctx);
+  fname = (argc > 1) ? argv[1] : "default.deps";
+  ctx = fetchdeps_parser_new(fname);
+  if (!ctx)
+    goto failure;
 
-  if (success)
-    return 0;
-  else
-    return 1;
+  if (!fetchdeps_parser_initvars(ctx))
+    goto failure;
+  
+  if (!fetchdeps_parser_parse(ctx))
+    goto failure;
+
+  fetchdeps_parser_free(ctx);
+  return 0;
+
+failure:
+  if (ctx)
+    fetchdeps_parser_free(ctx);
+  return 1;
 }

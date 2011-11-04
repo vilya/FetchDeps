@@ -43,20 +43,19 @@ typedef struct SParserContext ParserContext;
 // Public functions
 //
 
-ParserContext* Open(char* fname);
-void Close(ParserContext* ctx);
+ParserContext* fetchdeps_parser_new(char* fname);
+void fetchdeps_parser_free(ParserContext* ctx);
 
-void SetBuiltinVariables(ParserContext* ctx);
-
-bool_t Parse(ParserContext* ctx);
+bool_t fetchdeps_parser_initvars(ParserContext* ctx);
+bool_t fetchdeps_parser_parse(ParserContext* ctx);
 
 
 //
 // Functions for use inside the parser
 //
 
-void fetchdeps_parse_error(ParserContext* ctx, char* format, ...);
-void fetchdeps_parse_info(ParserContext* ctx, char* format, ...);
+void fetchdeps_parser_error(ParserContext* ctx, char* format, ...);
+void fetchdeps_parser_info(ParserContext* ctx, char* format, ...);
 
 #endif // fetchdeps_parse_h
 

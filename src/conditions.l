@@ -59,7 +59,7 @@ NL    \n\r?" "*
 
 %%
 
-bool_t Parse(ParserContext* ctx)
+bool_t fetchdeps_parser_parse(ParserContext* ctx)
 {
   gContext = ctx;
   yyin = ctx->f;
