@@ -1,9 +1,13 @@
 /* Parse compound logical expressions. */
 
 %{
+#include "parse.h"
 #include <stdio.h>
+
 int yylex();
 void yyerror(const char* s);
+
+extern ParserContext* gContext;
 %}
 
 %union {
