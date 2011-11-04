@@ -102,6 +102,7 @@ fetchdeps_varmap_set(varmap_t* vm, char* key, stringset_t* value)
   assert(vm->keys != NULL);
   assert(vm->values != NULL);
   assert(key != NULL);
+  assert(value != NULL);
 
   // See if we're replacing an existing value.
   for (i = 0; i < vm->size; ++i) {
@@ -136,6 +137,27 @@ fetchdeps_varmap_set(varmap_t* vm, char* key, stringset_t* value)
     return 0;
   vm->values[vm->size] = value;
   ++vm->size;
+}
+
+
+bool_t
+fetchdeps_varmap_set_single(varmap_t* vm, char* key, char* value)
+{
+  stringset_t* ss;
+
+  assert(vm != NULL);
+  assert(vm->size <= vm->capacity);
+  assert(vm->capacity > 0);
+  assert(vm->keys != NULL);
+  assert(vm->values != NULL);
+  assert(key != NULL);
+  assert(value != NULL);
+
+  ss = fetchdeps_stringset_new_single(value);
+  if (!ss)
+    return 0;
+
+  return fetchdeps_varmap_set(vm, key, ss);
 }
 
 
@@ -180,5 +202,34 @@ fetchdeps_varmap_contains(varmap_t* vm, char* key)
   }
 
   return 0;
+}
+
+
+bool_t
+fetchdeps_varmap_add_value(varmap_t* vm, char* key, char* value)
+{
+  size_t i;
+  stringset_t* ss;
+
+  assert(vm != NULL);
+  assert(vm->size <= vm->capacity);
+  assert(vm->capacity > 0);
+  assert(vm->keys != NULL);
+  assert(vm->values != NULL);
+  assert(key != NULL);
+
+  // Find the variable we'll be adding to.
+  for (i = 0; i < vm->size; ++i) {
+    if (strcmp(vm->keys[i], key) == 0)
+      break;
+  }
+  if (i == vm->size)
+    return 0;
+
+  ss = vm->values[i];
+  id (!ss)
+    return 0;
+
+  return fetchdeps_stringset_add(ss, value);
 }
 
