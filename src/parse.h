@@ -2,6 +2,7 @@
 #define fetchdeps_parse_h
 
 #include "common.h"
+#include "varmap.h"
 
 #include <stdio.h>
 
@@ -33,10 +34,7 @@ struct SParserContext {
 
   int indents[kMaxIndents];
 
-  int numVars;
-  int numValues[kMaxVariables];
-  char varNames[kMaxVariables][kMaxVarNameLen];
-  char varValues[kMaxVariables][kMaxValues][kMaxValueLen];
+  varmap_t* vars;
 };
 typedef struct SParserContext ParserContext;
 
@@ -49,8 +47,6 @@ ParserContext* Open(char* fname);
 void Close(ParserContext* ctx);
 
 void SetBuiltinVariables(ParserContext* ctx);
-int AddVariable(ParserContext* ctx, const char* varName);
-void AddValue(ParserContext* ctx, int varIndex, const char* value);
 
 bool_t Parse(ParserContext* ctx);
 
@@ -61,8 +57,6 @@ bool_t Parse(ParserContext* ctx);
 
 void Error(ParserContext* ctx, char* format, ...);
 void Info(ParserContext* ctx, char* format, ...);
-int FindVariable(ParserContext* ctx, const char* varName);
-bool_t HasValue(ParserContext* ctx, int varIndex, const char* value);
 
 #endif // fetchdeps_parse_h
 

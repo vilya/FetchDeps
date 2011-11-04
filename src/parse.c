@@ -1,5 +1,7 @@
 #include "parse.h"
 
+#include "stringset.h"
+
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -24,28 +26,35 @@ ParserContext* Open(char* fname)
 {
   ParserContext* ctx = NULL;
 
-  FILE* f = fopen(fname, "r");
-  if (!f) {
-    fprintf(stderr, "Error: unable to open %s\n", fname);
-    exit(1);
-  }
-
   ctx = (ParserContext*)calloc(1, sizeof(ParserContext));
-  if (!ctx) {
-    fprintf(stderr, "Error: unable to create parser for %s. Running low on memory?\n", fname);
-    exit(1);
-  }
+  if (!ctx)
+    goto failure;
 
-  ctx->f = f;
+  ctx->vars = fetchdeps_varmap_new();
+  if (!ctx->vars)
+    goto failure;
+
+  ctx->f = fopen(fname, "r");
+  if (!ctx->f)
+    goto failure;
+
   ctx->lineNum = 0;
   ctx->start = -1;
   ctx->end = -1;
   ctx->indentLevel = 0;
   ctx->skipLevel = -1;
 
-  ctx->numVars = 0;
-
   return ctx;
+
+failure:
+  if (ctx) {
+    if (ctx->f)
+      fclose(ctx->f);
+    if (ctx->vars)
+      fetchdeps_varmap_free(ctx->vars);
+    free(ctx);
+  }
+  return NULL;
 }
 
 
@@ -53,6 +62,8 @@ void Close(ParserContext* ctx)
 {
   if (ctx->f)
     fclose(ctx->f);
+  if (ctx->vars)
+    fetchdeps_varmap_free(ctx->vars);
   free(ctx);
 }
 
@@ -61,42 +72,11 @@ void SetBuiltinVariables(ParserContext* ctx)
 {
   int osIndex, bitsIndex;
 
-  osIndex = AddVariable(ctx, "os");
-  AddValue(ctx, osIndex, kOperatingSystem);
+  assert(ctx != NULL);
+  assert(ctx->vars != NULL);
 
-  bitsIndex = AddVariable(ctx, "bits");
-  AddValue(ctx, bitsIndex, "64");
-}
-
-
-int AddVariable(ParserContext* ctx, const char* varName)
-{
-  int index;
-
-  if (ctx->numVars == kMaxVariables)
-    Error(ctx, "too many variables (maximum is %d)", kMaxVariables);
-
-  index = ctx->numVars;
-  CopyStr(ctx->varNames[index], varName, kMaxVarNameLen - 1);
-
-  ctx->numValues[index] = 0;
-  ctx->numVars++;
-
-  return index;
-}
-
-
-void AddValue(ParserContext* ctx, int varIndex, const char* value)
-{
-  int valIndex;
-
-  if (ctx->numValues[varIndex] == kMaxValues)
-    Error(ctx, "too many values for variable %s (maximum is %d)", ctx->varNames[varIndex], kMaxValues);
-
-  valIndex = ctx->numValues[varIndex];
-  CopyStr(ctx->varValues[varIndex][valIndex], value, kMaxValueLen - 1);
-
-  ctx->numValues[varIndex]++;
+  fetchdeps_varmap_set_single(ctx->vars, "os", kOperatingSystem);
+  fetchdeps_varmap_set_single(ctx->vars, "bits", "64");
 }
 
 
@@ -130,28 +110,6 @@ void Info(ParserContext* ctx, char* format, ...)
   va_end(args);
 
   printf("\n");
-}
-
-
-int FindVariable(ParserContext* ctx, const char* varName)
-{
-  int i;
-  for (i = 0; i < ctx->numVars; ++i) {
-    if (strcasecmp(varName, ctx->varNames[i]) == 0)
-      return i;
-  }
-  return -1;
-}
-
-
-bool_t HasValue(ParserContext* ctx, int varIndex, const char* value)
-{
-  int i;
-  for (i = 0; i < ctx->numValues[varIndex]; ++i) {
-    if (strcasecmp(value, ctx->varValues[varIndex][i]) == 0)
-      return True;
-  }
-  return False;
 }
 
 
