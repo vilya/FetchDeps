@@ -38,12 +38,5 @@ bool_t fetchdeps_parser_initvars(parser_t* ctx);
 bool_t fetchdeps_parser_parse(parser_t* ctx);
 
 
-//
-// Functions for use inside the parser
-//
-
-void fetchdeps_parser_error(parser_t* ctx, char* format, ...);
-void fetchdeps_parser_info(parser_t* ctx, char* format, ...);
-
 #endif // fetchdeps_parse_h
 

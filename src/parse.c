@@ -4,7 +4,6 @@
 
 #include <assert.h>
 #include <ctype.h>
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -84,36 +83,5 @@ fetchdeps_parser_initvars(parser_t* ctx)
 
   if (!fetchdeps_varmap_set_single(ctx->vars, "bits", "64"))
     return 0;
-}
-
-
-void
-fetchdeps_parser_error(parser_t* ctx, char* format, ...)
-{
-  va_list args;
-
-  fprintf(stderr, "[line %d] Error: ", ctx->lineNum);
-
-  va_start(args, format);
-  vfprintf(stderr, format, args);
-  va_end(args);
-
-  fprintf(stderr, "\n");
-  exit(1);
-}
-
-
-void
-fetchdeps_parser_info(parser_t* ctx, char* format, ...)
-{
-  va_list args;
-
-  printf("[line %d] ", ctx->lineNum);
-
-  va_start(args, format);
-  vprintf(format, args);
-  va_end(args);
-
-  printf("\n");
 }
 
