@@ -18,9 +18,7 @@ struct SParserContext {
   int end;      // Index of the null char in the lineBuf
   int indentLevel;
   int skipLevel;    // The indent level that we start skipping at. Skipping stops when a de-indent brings us back to this level.
-  Bool expectingIndent;
 
-  char lineBuf[kMaxLineLen];
   int indents[kMaxIndents];
 
   int numVars;
