@@ -1,7 +1,9 @@
 /* Parse compound logical expressions. */
 
 %{
+#include "common.h"
 #include "parse.h"
+#include "stringset.h"
 #include <stdio.h>
 
 int yylex();
@@ -12,14 +14,14 @@ extern ParserContext* gContext;
 
 %union {
   int bool_val;
-  int int_val;
   char* str_val;
-  char* var_val;
+  char* varname_val;
   char* url_val;
+  stringset_t* strset_val;
+  stringset_t* urlset_val;
 }
 
-%token <var_val> VAR
-%token <int_val> INT
+%token <varname_val> VAR
 %token <str_val> STR
 %token <url_val> URL
 
@@ -37,8 +39,13 @@ extern ParserContext* gContext;
 %token COLON
 %token NEWLINE
 
-%type <str_val> str_value
-%type <int_val> int_value
+%type <urlset_val> start
+%type <strset_val> str_value
+%type <strset_val> var_value
+%type <bool_val> relation
+%type <bool_val> condition
+%type <urlset_val> statement
+%type <urlset_val> block;
 
 %error-verbose
 
@@ -50,54 +57,47 @@ start:
 
 
 str_value:
-    STR
-  | str_value COMMA STR
+    STR                   { $$ = fetchdeps_stringset_new();
+                            fetchdeps_stringset_add($$, $1); }
+  | str_value COMMA STR   { fetchdeps_stringset_add($1, $3);
+                            $$ = $1; }
   ;
 
 
-int_value:
-    INT
-  | int_value COMMA INT
-  ;
-
-
-int_relation:
-    VAR int_value
-  | VAR NOT int_value
-  | VAR EQ int_value
-  | VAR NE int_value
-  ;
-
-
-str_relation:
-    VAR str_value
-  | VAR NOT str_value
-  | VAR EQ str_value
-  | VAR NE str_value
+var_value:
+    VAR     { $$ = NULL/* TODO: get the value of the variable from the parser context */; }
   ;
 
 
 relation:
-    int_relation
-  | str_relation
+    var_value str_value       { $$ = fetchdeps_stringset_contains_any($2, $1); }
+  | var_value NOT str_value   { $$ = !fetchdeps_stringset_contains_any($3, $1); }
+  | var_value EQ str_value    { $$ = fetchdeps_stringset_contains_any($3, $1); }
+  | var_value NE str_value    { $$ = !fetchdeps_stringset_contains_any($3, $1); }
   ;
 
 
-logical_clause:
-    relation
-  | logical_clause AND relation
-  | logical_clause OR relation
+condition:
+    relation                { $$ = $1; }
+  | condition AND relation  { $$ = $1 && $3; }
+  | condition OR relation   { $$ = $1 || $3; }
   ;
 
 
-statement: /* empty */
-  | URL { printf("URL: %s\n", $1); }
-  | logical_clause COLON INDENT block DEDENT
+statement: /* empty */                  { $$ = fetchdeps_stringset_new(); }
+  | URL                                 { $$ = fetchdeps_stringset_new();
+                                          fetchdeps_stringset_add($$, $1); }
+  | condition COLON INDENT block DEDENT { if ($1)
+                                            $$ = $4;
+                                          else
+                                            $$ = fetchdeps_stringset_new(); }
   ;
 
 block:
-    statement
-  | block NEWLINE statement
+    statement                 { $$ = $1; }
+  | block NEWLINE statement   { $$ = $1;
+                                fetchdeps_stringset_add_all($$, $3);
+                                fetchdeps_stringset_free($3); }
 
 
 %%

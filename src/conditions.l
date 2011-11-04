@@ -10,9 +10,7 @@ ParserContext* gContext = NULL;
 
 %option noyywrap
 %x STRING
-%x DEDENTING
 
-INT   [0-9]+
 VAR   [a-zA-Z_][a-zA-Z0-9_]*
 URL   ("http://"|"https://"|"file://")[a-zA-Z0-9./#:\-]+
 
@@ -32,8 +30,7 @@ NL    \n\r?" "*
 ":"     { return COLON; }
 
 {URL}   { yylval.url_val = yytext; return URL; }
-{INT}   { yylval.int_val = atoi(yytext); return INT; }
-{VAR}   { yylval.var_val = yytext; return VAR; }
+{VAR}   { yylval.varname_val = yytext; return VAR; }
 
 "\""          { BEGIN(STRING); }
 <STRING>[^"]* { yylval.str_val = yytext; return STR; } 
