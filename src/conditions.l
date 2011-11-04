@@ -63,11 +63,11 @@ NL    \n\r?" "*
 
 %%
 
-Bool Parse(ParserContext* ctx)
+bool_t Parse(ParserContext* ctx)
 {
   gContext = ctx;
   yyin = ctx->f;
   yyparse();
-  return True;
+  return 1;
 }
 

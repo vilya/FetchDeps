@@ -52,7 +52,7 @@ void SetBuiltinVariables(ParserContext* ctx);
 int AddVariable(ParserContext* ctx, const char* varName);
 void AddValue(ParserContext* ctx, int varIndex, const char* value);
 
-Bool Parse(ParserContext* ctx);
+bool_t Parse(ParserContext* ctx);
 
 
 //
@@ -62,7 +62,7 @@ Bool Parse(ParserContext* ctx);
 void Error(ParserContext* ctx, char* format, ...);
 void Info(ParserContext* ctx, char* format, ...);
 int FindVariable(ParserContext* ctx, const char* varName);
-Bool HasValue(ParserContext* ctx, int varIndex, const char* value);
+bool_t HasValue(ParserContext* ctx, int varIndex, const char* value);
 
 #endif // fetchdeps_parse_h
 

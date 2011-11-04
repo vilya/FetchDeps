@@ -145,7 +145,7 @@ int FindVariable(ParserContext* ctx, const char* varName)
 }
 
 
-Bool HasValue(ParserContext* ctx, int varIndex, const char* value)
+bool_t HasValue(ParserContext* ctx, int varIndex, const char* value)
 {
   int i;
   for (i = 0; i < ctx->numValues[varIndex]; ++i) {
@@ -157,13 +157,13 @@ Bool HasValue(ParserContext* ctx, int varIndex, const char* value)
 
 
 /*
-static Bool HandleCondition(ParserContext* ctx, int next)
+static bool_t HandleCondition(ParserContext* ctx, int next)
 {
   char varName[kMaxVarNameLen];
   char value[kMaxValueLen];
   int valStart, varIndex, varNameLen, valLen;
 
-  Bool result = False;
+  bool_t result = False;
 
   varNameLen = next - ctx->start;
   if (varNameLen >= kMaxVarNameLen)
