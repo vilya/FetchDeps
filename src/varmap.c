@@ -227,7 +227,7 @@ fetchdeps_varmap_add_value(varmap_t* vm, char* key, char* value)
     return 0;
 
   ss = vm->values[i];
-  id (!ss)
+  if (!ss)
     return 0;
 
   return fetchdeps_stringset_add(ss, value);
