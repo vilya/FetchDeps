@@ -8,18 +8,6 @@
 
 
 //
-// Constants
-//
-
-#define kMaxLineLen 4096
-#define kMaxIndents 128
-#define kMaxVariables 128
-#define kMaxVarNameLen 1024
-#define kMaxValues 128
-#define kMaxValueLen 256
-
-
-//
 // Types
 //
 
@@ -30,9 +18,9 @@ struct _parser {
   int start;    // Index of first non-space char in the lineBuf
   int end;      // Index of the null char in the lineBuf
   int indentLevel;
-  int skipLevel;    // The indent level that we start skipping at. Skipping stops when a de-indent brings us back to this level.
+  int skipLevel;    // The indent level we start skipping at. Skipping stops when a de-indent brings us back to this level.
 
-  int indents[kMaxIndents];
+  int indents[100]; // Ought to be enough for anybody...
 
   varmap_t* vars;
 };
