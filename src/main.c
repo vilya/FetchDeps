@@ -36,7 +36,7 @@ int main(int argc, char** argv)
   result_iter = fetchdeps_stringiter_new(results);
   result_str = fetchdeps_stringiter_next(result_iter);
   while (result_str) {
-    printf("URL: %s\n", result_str);
+    printf("%s\n", result_str);
     result_str = fetchdeps_stringiter_next(result_iter);
   }
 
