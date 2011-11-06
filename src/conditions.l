@@ -75,12 +75,12 @@ NL    \n\r?" "*
 
 %%
 
-bool_t fetchdeps_parser_parse(parser_t* ctx)
+bool_t fetchdeps_parser_parse(parser_t* ctx, stringset_t* results)
 {
   g_ctx = ctx;
   yyin = ctx->f;
   
-  if (yyparse() != 0)
+  if (yyparse(results) != 0)
     return 0;
   
   return 1;

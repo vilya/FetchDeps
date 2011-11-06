@@ -183,15 +183,28 @@ fetchdeps_stringset_contains_any(stringset_t* haystack,
 // stringiter_t functions
 //
 
-stringiter_t
+stringiter_t*
 fetchdeps_stringiter_new(stringset_t* ss)
 {
-  stringiter_t iter;
+  stringiter_t* iter = NULL;
 
   assert(ss != NULL);
 
-  iter.pos = (ss->str) ? ss : ss->next;
+  iter = (stringiter_t*)malloc(sizeof(stringiter_t));
+  if (!iter)
+    return NULL;
+
+  iter->pos = (ss->str) ? ss : ss->next;
   return iter;
+}
+
+
+void
+fetchdeps_stringiter_free(stringiter_t* iter)
+{
+  assert(iter != NULL);
+
+  free(iter);
 }
 
 

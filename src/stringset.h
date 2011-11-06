@@ -34,7 +34,8 @@ bool_t        fetchdeps_stringset_contains_any(stringset_t* haystack, stringset_
 // Iterator functions
 //
 
-stringiter_t  fetchdeps_stringiter_new(stringset_t* ss);
+stringiter_t* fetchdeps_stringiter_new(stringset_t* ss);
+void          fetchdeps_stringiter_free(stringiter_t* ss);
 char*         fetchdeps_stringiter_next(stringiter_t* iter);
 
 #endif // fetchdeps_stringset_h

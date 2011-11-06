@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 //int yylex(YYSTYPE* lvalp, YYLTYPE* llocp, yyscan_t scanner);
-void yyerror(const char* s);
+void yyerror(stringset_t* /*ignored*/, const char* s);
 
 extern parser_t* g_ctx;
 %}
@@ -50,11 +50,13 @@ extern parser_t* g_ctx;
 
 %error-verbose
 %locations
+%parse-param {stringset_t* parse_results} 
 
 %%
 
 start:
-  block
+  block   { fetchdeps_stringset_add_all(parse_results, $1);
+            fetchdeps_stringset_free($1); }
 ;
 
 
@@ -107,7 +109,7 @@ block:
 
 %%
 
-void yyerror(const char* msg)
+void yyerror(stringset_t* ignored, const char* msg)
 {
   fprintf(stderr, "[line %d, cols %d - %d] %s\n",
           yylloc.first_line, yylloc.first_column, yylloc.last_column, msg);

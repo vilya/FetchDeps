@@ -2,6 +2,7 @@
 #define fetchdeps_parse_h
 
 #include "common.h"
+#include "stringset.h"
 #include "varmap.h"
 
 #include <stdio.h>
@@ -30,7 +31,7 @@ parser_t* fetchdeps_parser_new(char* fname);
 void fetchdeps_parser_free(parser_t* ctx);
 
 bool_t fetchdeps_parser_initvars(parser_t* ctx);
-bool_t fetchdeps_parser_parse(parser_t* ctx);
+bool_t fetchdeps_parser_parse(parser_t* ctx, stringset_t* results);
 
 
 #endif // fetchdeps_parse_h
