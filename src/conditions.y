@@ -7,7 +7,7 @@
 #include "varmap.h"
 #include <stdio.h>
 
-int yylex();
+//int yylex(YYSTYPE* lvalp, YYLTYPE* llocp, yyscan_t scanner);
 void yyerror(const char* s);
 
 extern parser_t* g_ctx;
@@ -49,6 +49,7 @@ extern parser_t* g_ctx;
 %type <urlset_val> block;
 
 %error-verbose
+%locations
 
 %%
 
@@ -108,6 +109,7 @@ block:
 
 void yyerror(const char* msg)
 {
-  fprintf(stderr, "%s\n", msg);
+  fprintf(stderr, "[from line %d, col %d] %s\n", yylloc.first_line, yylloc.first_column, msg);
+  fprintf(stderr, "[to   line %d, col %d] %s\n", yylloc.last_line, yylloc.last_column, msg);
 }
 

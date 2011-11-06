@@ -7,11 +7,20 @@
 
 #include "conditions.tab.h"
 
-// TODO: this should probably go in the .y file instead.
+#define YY_USER_ACTION { \
+  yylloc.first_line = yylloc.last_line = yylineno; \
+  yylloc.first_column = yycolumn; \
+  yylloc.last_column = yycolumn + yyleng - 1; \
+  yycolumn += yyleng; \
+}
+
 parser_t* g_ctx = NULL;
+int yycolumn = 1;
 %}
 
 %option noyywrap
+%option yylineno
+
 %x STRING
 
 VAR   [a-zA-Z_][a-zA-Z0-9_]*
@@ -41,6 +50,11 @@ NL    \n\r?" "*
 
 {NL}    {
           int len = (yytext[1] == '\r') ? strlen(yytext + 2) : strlen(yytext + 1);
+
+          yylloc.first_column = 1;
+          yylloc.last_column = len;
+          yycolumn = len + 1;
+
           if (len > g_ctx->indents[g_ctx->indent_level]) {
             g_ctx->indents[++g_ctx->indent_level] = len;
             return INDENT;
