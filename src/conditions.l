@@ -48,6 +48,8 @@ NL    \n\r?" "*
 <STRING>[^"]* { yylval.str_val = yytext; return STR; } 
 <STRING>"\""  { BEGIN(INITIAL); }
 
+{NL}$   { /* ignore blank lines */ }
+
 {NL}    {
           int len = (yytext[1] == '\r') ? strlen(yytext + 2) : strlen(yytext + 1);
 
@@ -77,7 +79,10 @@ bool_t fetchdeps_parser_parse(parser_t* ctx)
 {
   g_ctx = ctx;
   yyin = ctx->f;
-  yyparse();
+  
+  if (yyparse() != 0)
+    return 0;
+  
   return 1;
 }
 
