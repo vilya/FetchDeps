@@ -109,7 +109,7 @@ block:
 
 void yyerror(const char* msg)
 {
-  fprintf(stderr, "[from line %d, col %d] %s\n", yylloc.first_line, yylloc.first_column, msg);
-  fprintf(stderr, "[to   line %d, col %d] %s\n", yylloc.last_line, yylloc.last_column, msg);
+  fprintf(stderr, "[line %d, cols %d - %d] %s\n",
+          yylloc.first_line, yylloc.first_column, yylloc.last_column, msg);
 }
 
