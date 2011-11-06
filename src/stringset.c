@@ -135,9 +135,15 @@ fetchdeps_stringset_add_all(stringset_t* dst, stringset_t* src)
 
   src_pos = src->next;
   while (src_pos != src) {
-    fetchdeps_stringset_add(dst, src_pos->str);
+    if (!fetchdeps_stringset_add(dst, src_pos->str))
+      goto failure;
     src_pos = src_pos->next;
   }
+
+  return 1;
+
+failure:
+  return 0;
 }
 
 
