@@ -77,10 +77,14 @@ var_value:
 
 
 relation:
-    var_value str_value       { $$ = fetchdeps_stringset_contains_any($1, $2); }
-  | var_value NOT str_value   { $$ = !fetchdeps_stringset_contains_any($1, $3); }
-  | var_value EQ str_value    { $$ = fetchdeps_stringset_contains_any($1, $3); }
-  | var_value NE str_value    { $$ = !fetchdeps_stringset_contains_any($1, $3); }
+    var_value str_value       { $$ = fetchdeps_stringset_contains_any($1, $2);
+                                fetchdeps_stringset_free($2); }
+  | var_value NOT str_value   { $$ = !fetchdeps_stringset_contains_any($1, $3);
+                                fetchdeps_stringset_free($3); }
+  | var_value EQ str_value    { $$ = fetchdeps_stringset_contains_any($1, $3);
+                                fetchdeps_stringset_free($3); }
+  | var_value NE str_value    { $$ = !fetchdeps_stringset_contains_any($1, $3);
+                                fetchdeps_stringset_free($3); }
   ;
 
 
@@ -92,12 +96,14 @@ condition:
 
 
 statement: /* empty */                  { $$ = fetchdeps_stringset_new(); }
-  | URL                                 { $$ = fetchdeps_stringset_new();
-                                          fetchdeps_stringset_add($$, $1); }
-  | condition COLON INDENT block DEDENT { if ($1)
+  | URL                                 { $$ = fetchdeps_stringset_new_single($1); }
+  | condition COLON INDENT block DEDENT { if ($1) {
                                             $$ = $4;
-                                          else
-                                            $$ = fetchdeps_stringset_new(); }
+                                          }
+                                          else {
+                                            fetchdeps_stringset_free($4);
+                                            $$ = fetchdeps_stringset_new();
+                                          } }
   ;
 
 block:
