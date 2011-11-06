@@ -40,7 +40,6 @@ fetchdeps_parser_new(char* fname)
     goto failure;
 
   ctx->indent_level = 0;
-  ctx->skip_level = -1;
 
   return ctx;
 
