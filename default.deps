@@ -1,7 +1,7 @@
 https://svnserver:444/svn/Foundry/Thirdparty/scons-1.2.0.zip
 os "linux", "mac":
   https://svnserver:444/svn/Foundry/Thirdparty/unixdeps-1.0-0.zip
-  bits 64:
+  bits "64": 
     https://svnserver:444/svn/Foundry/Thirdparty/unixdeps-64bit-1.0-0.zip
 os "win":
   https://svnserver:444/svn/Foundry/Thirdparty/windeps-1.0-0.zip
