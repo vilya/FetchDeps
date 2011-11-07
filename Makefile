@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -g
 LD = gcc
-LDFLAGS = 
+LDFLAGS = -lcurl
 
 SRC = src
 BUILD = build
@@ -12,13 +12,14 @@ BIN = bin
 
 
 OBJS = \
+  $(GENOBJ)/conditions.tab.o \
+  $(GENOBJ)/conditions.yy.o \
+  $(OBJ)/download.o \
   $(OBJ)/filesys.o \
   $(OBJ)/main.o \
   $(OBJ)/parse.o \
   $(OBJ)/stringset.o \
-  $(OBJ)/varmap.o \
-  $(GENOBJ)/conditions.tab.o \
-  $(GENOBJ)/conditions.yy.o
+  $(OBJ)/varmap.o
 
 
 .PHONY: default
