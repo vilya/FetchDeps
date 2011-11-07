@@ -10,22 +10,6 @@ To do
 
 - Extract tarballs, zip files, etc. after downloading.
 
-- Compound expressions for conditions:
-  
-  os "win" and bits "64"
-  os "win" or bits "64"
-  os not "win"
-
-  We should try to keep the set of supported operations as small as possible
-  while remaining useful. We don't want to encourage complicated conditions,
-  but we also want to avoid unnecessary nesting & duplication in the deps file.
- 
-- Replace hand-rolled parser with a flex & bison generated one, for ease of
-  future maintenance/extensibility.
-
-- Use dynamic allocation for the variable lists (because someone is bound to
-  hit the hard-coded limits sooner or later).
-
 - Per-project configuration mechanism allowing customisation of where downloads
   get stored; whether they all go to the same directory or a separate directory
   per url; etc. Maybe use 'git config' settings for this?
