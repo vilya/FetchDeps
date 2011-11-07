@@ -11,7 +11,16 @@
 // return the full (canonical) path as a null-terminated string. This string
 // will have been allocated using malloc & the caller must free it themselves.
 // If the file was not found, the return value is NULL.
-char* fetchdeps_filesys_default_depsfile();
+char* fetchdeps_filesys_default_deps_file();
+
+// Returns the default download directory: a directory called 'Thirdparty' in
+// the same directory as the deps_file. The deps_file parameter may be an
+// absolute or relative path, but must not be NULL.
+//
+// The return value will be NULL if the deps_file doesn't exist or some other
+// error occurred.
+char* fetchdeps_filesys_default_download_dir(char* deps_file);
+
 
 #endif // fetchdeps_filesys_h
 

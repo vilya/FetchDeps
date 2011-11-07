@@ -2,6 +2,7 @@
 
 #include "common.h"
 
+#include <assert.h>
 #include <libgen.h> // For the dirname() function. TODO: check if this is the right include for Mac as well.
 #include <limits.h> // For PATH_MAX
 #include <stdio.h>  // For snprintf(), fopen(), etc.
@@ -14,6 +15,8 @@
 //
 
 static const char* DEFAULT_DEPSFILE = "default.deps";
+static const char* DEFAULT_DOWNLOADS_DIR = "Thirdparty";
+
 static const char* ROOT_PATH = "/";
 
 
@@ -21,15 +24,23 @@ static const char* ROOT_PATH = "/";
 // Forward declarations
 //
 
-bool_t fetchdeps_filesys_depsfile_exists(char* dirpath);
+// Given the path to a directory, check whether it contains a default.deps
+// file and, if so, whether it's readable by the current user. Returns true
+// if those conditions are met, false otherwise.
+bool_t fetchdeps_filesys_depsfile_exists(const char* dirpath);
+
+// Combine a directory path with a filename to make a new path string. The
+// result will be a null-terminated string, or NULL if the function failed. It's
+// up to the caller to free() the returned string.
+char* fetchdeps_filesys_make_filepath(const char* dirpath, const char* filename);
 
 
 //
-// Functions
+// Public functions
 //
 
 char*
-fetchdeps_filesys_default_depsfile()
+fetchdeps_filesys_default_deps_file()
 {
   char path[PATH_MAX];
   int path_len;
@@ -46,16 +57,7 @@ fetchdeps_filesys_default_depsfile()
     dirpath = dirname(dirpath);
   }
 
-  if (dirpath != path) {
-    strncpy(path, dirpath, PATH_MAX);
-    path[PATH_MAX - 1] = '\0'; // Just in case.
-  }
-
-  path_len = strlen(path);
-  if (snprintf(path + path_len, PATH_MAX - path_len, "/%s", DEFAULT_DEPSFILE) != strlen(DEFAULT_DEPSFILE) + 1)
-    goto failure;
-
-  result = strdup(path);
+  result = fetchdeps_filesys_make_filepath(dirpath, DEFAULT_DEPSFILE);
   if (!result)
     goto failure;
 
@@ -69,11 +71,44 @@ failure:
 }
 
 
+char*
+fetchdeps_filesys_default_download_dir(char* deps_file)
+{
+  char* file_path = NULL;
+  char* dir_path = NULL;
+  char* download_path = NULL;
+
+  file_path = realpath(deps_file, NULL);
+  if (!file_path)
+    goto failure;
+
+  dir_path = dirname(file_path);
+  if (!dir_path)
+    goto failure;
+  
+  download_path = fetchdeps_filesys_make_filepath(dir_path, DEFAULT_DOWNLOADS_DIR);
+  if (!download_path)
+    goto failure;
+
+  free(file_path);
+
+  return download_path;
+
+failure:
+  if (file_path)
+    free(file_path);
+  if (download_path)
+    free(download_path);
+  return NULL;
+}
+
+
 //
 // Private functions
 //
 
-bool_t fetchdeps_filesys_depsfile_exists(char* dirpath)
+bool_t
+fetchdeps_filesys_depsfile_exists(const char* dirpath)
 {
   char filepath[PATH_MAX + 1];
   FILE* f = NULL;
@@ -87,5 +122,31 @@ bool_t fetchdeps_filesys_depsfile_exists(char* dirpath)
 
   fclose(f);
   return 1;
+}
+
+
+char*
+fetchdeps_filesys_make_filepath(const char* dirpath, const char* filename)
+{
+  char* filepath = NULL;
+  int filepath_len;
+
+  assert(dirpath != NULL);
+  assert(filename != NULL);
+
+  filepath_len = strlen(dirpath) + strlen(filename) + 2;
+  filepath = malloc(filepath_len * sizeof(char));
+  if (!filepath)
+    goto failure;
+
+  if (snprintf(filepath, filepath_len, "%s/%s", dirpath, filename) != filepath_len - 1)
+    goto failure;
+
+  return filepath;
+
+failure:
+  if (filepath)
+    free(filepath);
+  return NULL;
 }
 
