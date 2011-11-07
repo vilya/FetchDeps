@@ -12,6 +12,7 @@ BIN = bin
 
 
 OBJS = \
+  $(OBJ)/filesys.o \
   $(OBJ)/main.o \
   $(OBJ)/parse.o \
   $(OBJ)/stringset.o \
