@@ -3,6 +3,7 @@
 #include "common.h"
 
 #include <assert.h>
+#include <dirent.h> // For opendir() and closedir().
 #include <libgen.h> // For the dirname() function. TODO: check if this is the right include for Mac as well.
 #include <limits.h> // For PATH_MAX
 #include <stdio.h>  // For snprintf(), fopen(), etc.
@@ -38,6 +39,22 @@ char* fetchdeps_filesys_make_filepath(const char* dirpath, const char* filename)
 //
 // Public functions
 //
+
+bool_t
+fetchdeps_filesys_is_directory(char* path)
+{
+  DIR* dir = NULL;
+
+  assert(path != NULL);
+
+  dir = opendir(path);
+  if (!dir)
+    return 0;
+
+  closedir(dir);
+  return 1;
+}
+
 
 char*
 fetchdeps_filesys_default_deps_file()

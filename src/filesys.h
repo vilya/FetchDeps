@@ -1,9 +1,17 @@
 #ifndef fetchdeps_filesys_h
 #define fetchdeps_filesys_h
 
+#include "common.h"
+
 //
 // Functions
 //
+
+// Check whether the given path is a directory. Returns true if it is; returns
+// false if the path doesn't exist, it isn't a directory, the current user has
+// insufficient permission to open the directory, or there was any other
+// failure.
+bool_t fetchdeps_filesys_is_directory(char* path);
 
 // Find the default deps file by searching upwards through the directory
 // hierarchy, starting from the current directory. The default file name is
