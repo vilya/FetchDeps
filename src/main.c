@@ -21,9 +21,13 @@ usage(char* prog)
 "\n"
 "where [options] can be any combination of:\n"
 "\n"
-"-f, --file   Specify a deps file to use. If not specified we'll search for\n"
-"             a file called default.deps in the current directory or any of\n"
-"             its ancestors and use that if found.\n"
+"-f, --file         Specify a deps file to use. If not specified we'll \n"
+"                   search for a file called 'default.deps' in the current\n"
+"                   directory or any of its ancestors and use that if found.\n"
+"\n"
+"-t, --to-dir       Specify the directory to store the downloaded files in.\n"
+"                   This will default to 'Thirdparty' in the same directory\n"
+"                   as the deps file if not specified.\n"
 "\n"
 "-n, --no-changes   Don't download anything, or change the disk in any way,\n"
 "                   but show what would have been downloaded.\n"
@@ -57,6 +61,7 @@ failure:
     fetchdeps_stringiter_free(url_iter);
 }
 
+
 int
 main(int argc, char** argv)
 {
@@ -70,9 +75,10 @@ main(int argc, char** argv)
   bool_t no_changes = 0;
 
   // Parse the command line.
-  char* short_options = "f:nh";
+  char* short_options = "f:t:nh";
   struct option long_options [] = {
     { "file",       required_argument,  NULL, 'f' },
+    { "to-dir",     required_argument,  NULL, 't' },
     { "no-changes", no_argument,        NULL, 'n' },
     { "help",       no_argument,        NULL, 'h' },
     { NULL,         0,                  NULL, 0 }
@@ -87,6 +93,17 @@ main(int argc, char** argv)
       }
       fname = strdup(optarg);
       if (!fname) {
+        fprintf(stderr, "Error: too low on memory to proceed.\n");
+        goto failure;
+      }
+      break;
+    case 't':
+      if (to_dir) {
+        free(to_dir);
+        fprintf(stderr, "Warning: multiple to-dirs specified; all but the last will be ignored.\n");
+      }
+      to_dir = strdup(optarg);
+      if (!to_dir) {
         fprintf(stderr, "Error: too low on memory to proceed.\n");
         goto failure;
       }
