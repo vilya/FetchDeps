@@ -20,8 +20,6 @@
 //
 
 typedef int bool_t;
-static const bool_t False = 0;
-static const bool_t True = ~0;
 
 
 #endif // fetchdeps_common_h
