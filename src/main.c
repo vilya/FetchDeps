@@ -115,7 +115,6 @@ main(int argc, char** argv)
     fprintf(stderr, "Error: no deps file specified and couldn't find default.deps\n");
     goto failure;
   }
-  printf("Deps file: %s\n", fname);
 
   // If no to_dir was given, use the default location.
   if (!to_dir)
@@ -124,7 +123,10 @@ main(int argc, char** argv)
     fprintf(stderr, "Error: no to-dir specified and couldn't determing the default location.\n");
     goto failure;
   }
-  printf("To dir: %s\n", to_dir);
+  if (!fetchdeps_filesys_is_directory(to_dir)) {
+    fprintf(stderr, "Error: to-dir %s is not a directory, or is not writable.\n", to_dir);
+    goto failure;
+  }
 
   // Set up for parsing.
   ctx = fetchdeps_parser_new(fname);
