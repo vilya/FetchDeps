@@ -1,9 +1,6 @@
 To do
 -----
 
-- Download dependencies using libcurl. Make sure to handle (at least) http,
-  https, ftp and file protocols.
-
 - Extract tarballs, zip files, etc. after downloading.
 
 - Per-project configuration mechanism allowing customisation of where downloads
@@ -13,4 +10,7 @@ To do
 - Subcommands for: listing all deps for current platform, listing deps which
   are/aren't missing, downloading all (or a subset of) deps, removing a dep,
   etc.
+
+- Before downloading, check that we won't end up with two or more URLs being
+  downloaded to the same local file.
 
