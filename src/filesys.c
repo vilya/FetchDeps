@@ -9,6 +9,7 @@
 #include <stdio.h>  // For snprintf(), fopen(), etc.
 #include <stdlib.h> // For realpath(), malloc(), etc.
 #include <string.h> // For strcmp().
+#include <unistd.h> // for getcwd().
 
 
 //
@@ -60,7 +61,6 @@ char*
 fetchdeps_filesys_default_deps_file()
 {
   char path[PATH_MAX];
-  int path_len;
   char* dirpath = NULL;
   char* result = NULL;
 
