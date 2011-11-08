@@ -109,6 +109,7 @@ fetchdeps_stringset_add(stringset_t* ss, char* str)
   assert(ss != NULL);
   assert(ss->strings != NULL);
   assert(ss->size <= ss->capacity);
+  assert(str != NULL);
 
   fprintf(stderr, "Adding '%s' to stringset 0x%llx\n", str, (long long int)ss);
 
@@ -121,11 +122,12 @@ fetchdeps_stringset_add(stringset_t* ss, char* str)
   if (ss->size == ss->capacity) {
     size_t new_capacity = ss->capacity * 2;
 
-    char** new_strings = realloc(ss->strings, new_capacity * sizeof(char));
+    char** new_strings = (char**)realloc(ss->strings, new_capacity * sizeof(char));
     if (!new_strings)
       goto failure;
     ss->strings = new_strings;
     ss->capacity = new_capacity;
+    memset(ss->strings + ss->size, 0, ss->capacity - ss->size);
   }
 
   ss->strings[ss->size] = strdup(str);
