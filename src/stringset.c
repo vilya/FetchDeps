@@ -100,7 +100,6 @@ fetchdeps_stringset_free(stringset_t* ss)
   free(ss);
 }
 
-#include <stdio.h>
 bool_t
 fetchdeps_stringset_add(stringset_t* ss, char* str)
 {
@@ -111,8 +110,6 @@ fetchdeps_stringset_add(stringset_t* ss, char* str)
   assert(ss->size <= ss->capacity);
   assert(str != NULL);
 
-  fprintf(stderr, "Adding '%s' to stringset 0x%llx\n", str, (long long int)ss);
-
   for (i = 0; i < ss->size; ++i) {
     if (strcmp(ss->strings[i], str) == 0)
       return 1;
@@ -122,7 +119,7 @@ fetchdeps_stringset_add(stringset_t* ss, char* str)
   if (ss->size == ss->capacity) {
     size_t new_capacity = ss->capacity * 2;
 
-    char** new_strings = (char**)realloc(ss->strings, new_capacity * sizeof(char));
+    char** new_strings = (char**)realloc(ss->strings, new_capacity * sizeof(char*));
     if (!new_strings)
       goto failure;
     ss->strings = new_strings;
