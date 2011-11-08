@@ -4,6 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+//
+// Constants
+//
+
+static const size_t INITIAL_CAPACITY = 2;
+
+
 //
 // Types
 //
@@ -12,13 +20,15 @@
 // The list is circular, so iteration ends when we find ourselves back at the
 // sentinel. The sentinel is the only element allowed to have a NULL str.
 struct _stringset {
-  char* str;
-  struct _stringset* next;
+  char** strings;
+  size_t size;
+  size_t capacity;
 };
 
 
 struct _stringiter {
-  struct _stringset* pos;
+  struct _stringset* ss;
+  size_t index;
 };
 
 
@@ -31,23 +41,37 @@ fetchdeps_stringset_new()
 {
   stringset_t* ss = (stringset_t*)malloc(sizeof(stringset_t));
   if (!ss)
-    return NULL;
+    goto failure;
 
-  ss->str = NULL;
-  ss->next = ss;
+  ss->strings = (char**)calloc(INITIAL_CAPACITY, sizeof(char*));
+  if (!ss->strings)
+    goto failure;
+
+  ss->size = 0;
+  ss->capacity = INITIAL_CAPACITY;
+
   return ss;
+
+failure:
+  if (ss) {
+    if (ss->strings)
+      free(ss->strings);
+    free(ss);
+  }
+  return NULL;
 }
 
 
 stringset_t*
 fetchdeps_stringset_new_single(char* str)
 {
-  stringset_t* ss = (stringset_t*)malloc(sizeof(stringset_t));
+  stringset_t* ss = NULL;
+
+  assert(str != NULL);
+
+  ss = fetchdeps_stringset_new();
   if (!ss)
     goto failure;
-
-  ss->str = NULL;
-  ss->next = ss;
 
   if (!fetchdeps_stringset_add(ss, str))
     goto failure;
@@ -56,7 +80,7 @@ fetchdeps_stringset_new_single(char* str)
 
 failure:
   if (ss)
-    free(ss);
+    fetchdeps_stringset_free(ss);
   return NULL;
 }
 
@@ -64,61 +88,54 @@ failure:
 void
 fetchdeps_stringset_free(stringset_t* ss)
 {
-  stringset_t* first = ss;
-  stringset_t* next;
+  size_t i;
 
   assert(ss != NULL);
-  assert(ss->str == NULL);
+  assert(ss->strings != NULL);
+  assert(ss->size <= ss->capacity);
 
-  do {
-    if (ss->str)
-      free(ss->str);
-    next = ss->next;
-    free(ss);
-    ss = next;
-  } while (ss != first);
+  for (i = 0; i < ss->size; ++i)
+    free(ss->strings[i]);
+  free(ss->strings);
+  free(ss);
 }
 
-
+#include <stdio.h>
 bool_t
 fetchdeps_stringset_add(stringset_t* ss, char* str)
 {
-  stringset_t* prev;
-  stringset_t* curr;
+  size_t i;
 
   assert(ss != NULL);
-  assert(ss->str == NULL);
-  assert(str != NULL);
+  assert(ss->strings != NULL);
+  assert(ss->size <= ss->capacity);
 
-  prev = ss;
-  curr = ss->next;
-  while (curr != ss && strcmp(curr->str, str) != 0) {
-    prev = curr;
-    curr = curr->next;
+  fprintf(stderr, "Adding '%s' to stringset 0x%llx\n", str, (long long int)ss);
+
+  for (i = 0; i < ss->size; ++i) {
+    if (strcmp(ss->strings[i], str) == 0)
+      return 1;
   }
-  if (curr != ss)
-    return 1;
 
   // If we got here, we're adding a new string.
-  curr = (stringset_t*)malloc(sizeof(stringset_t));
-  if (!curr)
-    goto failure;
+  if (ss->size == ss->capacity) {
+    size_t new_capacity = ss->capacity * 2;
 
-  curr->str = strdup(str);
-  if (!curr->str)
+    char** new_strings = realloc(ss->strings, new_capacity * sizeof(char));
+    if (!new_strings)
+      goto failure;
+    ss->strings = new_strings;
+    ss->capacity = new_capacity;
+  }
+
+  ss->strings[ss->size] = strdup(str);
+  if (!ss->strings[ss->size])
     goto failure;
-  
-  curr->next = ss;
-  prev->next = curr;
+  ++ss->size;
 
   return 1;
 
 failure:
-  if (curr) {
-    if (curr->str)
-      free(curr->str);
-    free(curr);
-  }
   return 0;
 }
 
@@ -126,18 +143,18 @@ failure:
 bool_t
 fetchdeps_stringset_add_all(stringset_t* dst, stringset_t* src)
 {
-  stringset_t* src_pos;
+  size_t i;
 
   assert(dst != NULL);
-  assert(dst->str == NULL);
+  assert(dst->strings != NULL);
+  assert(dst->size <= dst->capacity);
   assert(src != NULL);
-  assert(src->str == NULL);
+  assert(src->strings != NULL);
+  assert(src->size <= src->capacity);
 
-  src_pos = src->next;
-  while (src_pos != src) {
-    if (!fetchdeps_stringset_add(dst, src_pos->str))
+  for (i = 0; i < src->size; ++i) {
+    if (!fetchdeps_stringset_add(dst, src->strings[i]))
       goto failure;
-    src_pos = src_pos->next;
   }
 
   return 1;
@@ -150,16 +167,18 @@ failure:
 bool_t
 fetchdeps_stringset_contains(stringset_t* ss, char* str)
 {
-  stringset_t* pos;
+  size_t i;
 
   assert(ss != NULL);
-  assert(ss->str == NULL);
+  assert(ss->strings != NULL);
+  assert(ss->size <= ss->capacity);
   assert(str != NULL);
 
-  pos = ss->next;
-  while (pos != ss && strcmp(pos->str, str) != 0)
-    pos = pos->next;
-  return (pos != ss);
+  for (i = 0; i < ss->size; ++i) {
+    if (strcmp(ss->strings[i], str) == 0)
+      return 1;
+  }
+  return 0;
 }
 
 
@@ -167,20 +186,19 @@ bool_t
 fetchdeps_stringset_contains_any(stringset_t* haystack,
                                  stringset_t* needles)
 {
-  stringset_t* needle;
+  size_t i;
 
   assert(haystack != NULL);
-  assert(haystack->str == NULL);
+  assert(haystack->strings != NULL);
+  assert(haystack->size <= haystack->capacity);
   assert(needles != NULL);
-  assert(needles->str == NULL);
+  assert(needles->strings != NULL);
+  assert(needles->size <= haystack->capacity);
 
-  needle = needles->next;
-  while (needle != needles) {
-    if (fetchdeps_stringset_contains(haystack, needle->str))
+  for (i = 0; i < needles->size; ++i) {
+    if (fetchdeps_stringset_contains(haystack, needles->strings[i]))
       return 1;
-    needle = needle->next;
   }
-
   return 0;
 }
 
@@ -195,12 +213,16 @@ fetchdeps_stringiter_new(stringset_t* ss)
   stringiter_t* iter = NULL;
 
   assert(ss != NULL);
+  assert(ss->strings != NULL);
+  assert(ss->size <= ss->capacity);
 
   iter = (stringiter_t*)malloc(sizeof(stringiter_t));
   if (!iter)
     return NULL;
 
-  iter->pos = (ss->str) ? ss : ss->next;
+  iter->ss = ss;
+  iter->index = 0;
+
   return iter;
 }
 
@@ -220,10 +242,14 @@ fetchdeps_stringiter_next(stringiter_t* iter)
   char* result;
 
   assert(iter != NULL);
+  assert(iter->ss != NULL);
 
-  result = iter->pos->str;
-  if (result)
-    iter->pos = iter->pos->next;
+  if (iter->index >= iter->ss->size)
+    return NULL;
+
+  result = iter->ss->strings[iter->index];
+  ++iter->index;
+
   return result;
 }
 
