@@ -69,8 +69,6 @@ fetchdeps_parser_free(parser_t* ctx)
 bool_t
 fetchdeps_parser_initvars(parser_t* ctx)
 {
-  int osIndex, bitsIndex;
-
   assert(ctx != NULL);
   assert(ctx->vars != NULL);
 
@@ -79,5 +77,7 @@ fetchdeps_parser_initvars(parser_t* ctx)
 
   if (!fetchdeps_varmap_set_single(ctx->vars, "bits", "64"))
     return 0;
+
+  return 1;
 }
 
