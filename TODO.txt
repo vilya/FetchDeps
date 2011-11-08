@@ -14,3 +14,8 @@ To do
 - Before downloading, check that we won't end up with two or more URLs being
   downloaded to the same local file.
 
+- Better error reporting. We handle errors gracefully at the moment, but don't
+  tell the user what's gone wrong.
+
+- Windows support.
+
