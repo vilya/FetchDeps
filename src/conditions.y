@@ -7,7 +7,7 @@
 #include "varmap.h"
 #include <stdio.h>
 
-//int yylex(YYSTYPE* lvalp, YYLTYPE* llocp, yyscan_t scanner);
+int yylex();
 void yyerror(stringset_t* /*ignored*/, const char* s);
 
 extern parser_t* g_ctx;
@@ -55,24 +55,34 @@ extern parser_t* g_ctx;
 %%
 
 start:
-  block   { fetchdeps_stringset_add_all(parse_results, $1);
-            fetchdeps_stringset_free($1); }
+  block   { if (!fetchdeps_stringset_add_all(parse_results, $1)) {
+              yyerror(parse_results, "failed to add URLs to result set");
+              YYERROR;
+            }
+            /*fetchdeps_stringset_free($1);*/ }
 ;
 
 
 str_value:
-    STR                   { $$ = fetchdeps_stringset_new_single($1); }
-  | str_value COMMA STR   { $$ = $1; fetchdeps_stringset_add($$, $3); }
+    STR                   { $$ = fetchdeps_stringset_new_single($1);
+                            if (!$$) {
+                              yyerror(parse_results, "failed to create new string literal");
+                              YYERROR;
+                            } }
+  | str_value COMMA STR   { $$ = $1;
+                            if (!fetchdeps_stringset_add($$, $3)) {
+                              yyerror(parse_results, "failed to add literal string to string value");
+                              YYERROR;
+                            } }
   ;
 
 
 var_value:
     VAR     { $$ = fetchdeps_varmap_get(g_ctx->vars, $1);
               if (!$$) {
-                fprintf(stderr, "missing variable: %s\n", $1);
+                yyerror(parse_results, "unknown variable\n");
                 YYERROR;
-              }
-            }
+              } }
   ;
 
 
@@ -95,21 +105,36 @@ condition:
   ;
 
 
-statement: /* empty */                  { $$ = fetchdeps_stringset_new(); }
-  | URL                                 { $$ = fetchdeps_stringset_new_single($1); }
+statement: /* empty */                  { $$ = fetchdeps_stringset_new();
+                                          if (!$$) {
+                                            yyerror(parse_results, "failed to allocate empty statement");
+                                            YYERROR;
+                                          } }
+  | URL                                 { $$ = fetchdeps_stringset_new_single($1);
+                                          if (!$$) {
+                                            yyerror(parse_results, "failed to allocate URL");
+                                            YYERROR;
+                                          } }
   | condition COLON INDENT block DEDENT { if ($1) {
                                             $$ = $4;
                                           }
                                           else {
                                             fetchdeps_stringset_free($4);
                                             $$ = fetchdeps_stringset_new();
+                                            if (!$$) {
+                                              yyerror(parse_results, "failed to allocate empty statement for ignored conditional block");
+                                              YYERROR;
+                                            }
                                           } }
   ;
 
 block:
     statement                 { $$ = $1; }
   | block NEWLINE statement   { $$ = $1;
-                                fetchdeps_stringset_add_all($$, $3);
+                                if (!fetchdeps_stringset_add_all($$, $3)) {
+                                  yyerror(parse_results, "failed to add URLs from conditional section");
+                                  YYERROR;
+                                }
                                 fetchdeps_stringset_free($3); }
 
 
