@@ -40,10 +40,6 @@ parser_t* fetchdeps_parser_new(char* fname);
 // memory for the varmap), this also closes the input file.
 void fetchdeps_parser_free(parser_t* ctx);
 
-// Initialise the built-in variables for the parser. The built-in variables
-// include the current operating system and bit-size.
-bool_t fetchdeps_parser_initvars(parser_t* ctx);
-
 // Parse the input file. This parses the entire file, evaluating any conditions
 // in the file and fills in the results parameter. The return value is true if
 // parsing was successful. If parsing failed for any reason - a syntax error,

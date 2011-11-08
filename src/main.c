@@ -1,5 +1,6 @@
 #include "common.h"
 #include "download.h"
+#include "environ.h"
 #include "filesys.h"
 #include "parse.h"
 #include "stringset.h"
@@ -29,6 +30,8 @@ usage(char* prog)
 "-t, --to-dir       Specify the directory to store the downloaded files in.\n"
 "                   This will default to 'Thirdparty' in the same directory\n"
 "                   as the deps file if not specified.\n"
+"\n"
+"-v, --verbose      Print out all variables before starting to parse.\n"
 "\n"
 "-n, --no-changes   Don't download anything, or change the disk in any way,\n"
 "                   but show what would have been downloaded.\n"
@@ -72,13 +75,15 @@ main(int argc, char** argv)
   // Options which can be set on the command line.
   char* fname = NULL;
   char* to_dir = NULL;
+  bool_t verbose = 0;
   bool_t no_changes = 0;
 
   // Parse the command line.
-  char* short_options = "f:t:nh";
+  char* short_options = "f:t:vnh";
   struct option long_options [] = {
     { "file",       required_argument,  NULL, 'f' },
     { "to-dir",     required_argument,  NULL, 't' },
+    { "verbose",    no_argument,        NULL, 'v' },
     { "no-changes", no_argument,        NULL, 'n' },
     { "help",       no_argument,        NULL, 'h' },
     { NULL,         0,                  NULL, 0 }
@@ -107,6 +112,9 @@ main(int argc, char** argv)
         fprintf(stderr, "Error: too low on memory to proceed.\n");
         goto failure;
       }
+      break;
+    case 'v':
+      verbose = 1;
       break;
     case 'n':
       no_changes = 1;
@@ -151,8 +159,16 @@ main(int argc, char** argv)
     fprintf(stderr, "Error: unable to create parser for %s\n", fname);
     goto failure;
   }
-  if (!fetchdeps_parser_initvars(ctx)) {
+  if (!fetchdeps_environ_default_vars(ctx->vars)) {
     fprintf(stderr, "Error: unable to initialise variables for parsing\n");
+    goto failure;
+  }
+  if (!fetchdeps_environ_get_vars(ctx->vars)) {
+    fprintf(stderr, "Error: unable to get variables from the environment\n");
+    goto failure;
+  }
+  if (!fetchdeps_environ_parse_vars(ctx->vars, argv)) {
+    fprintf(stderr, "Error: unable to get variables from the command line\n");
     goto failure;
   }
   urls = fetchdeps_stringset_new();

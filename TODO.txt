@@ -1,12 +1,7 @@
 To do
 -----
 
-- Set up more variables by default:
-  - Set 'bit' correctly for the system
-  - Variables describing the default compiler(s), ABI versions, etc.
-  - Environment variables.
-
-- Set variables on the command line.
+- Set the 'bits' variable correctly for the system.
 
 - Extract tarballs, zip files, etc. after downloading.
 

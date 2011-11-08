@@ -15,6 +15,7 @@ OBJS = \
   $(GENOBJ)/conditions.tab.o \
   $(GENOBJ)/conditions.yy.o \
   $(OBJ)/download.o \
+  $(OBJ)/environ.o \
   $(OBJ)/filesys.o \
   $(OBJ)/main.o \
   $(OBJ)/parse.o \
