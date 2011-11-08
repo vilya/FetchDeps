@@ -137,6 +137,8 @@ fetchdeps_varmap_set(varmap_t* vm, char* key, stringset_t* value)
     return 0;
   vm->values[vm->size] = value;
   ++vm->size;
+
+  return 1;
 }
 
 
