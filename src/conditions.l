@@ -13,6 +13,10 @@
   yylloc.last_column = yycolumn + yyleng - 1; \
   yycolumn += yyleng; \
 }
+#define YY_NO_INPUT 1
+
+// Forward declaration.
+extern int yyparse(stringset_t* results);
 
 parser_t* g_ctx = NULL;
 int yycolumn = 1;
