@@ -140,7 +140,7 @@ main(int argc, char** argv)
     fprintf(stderr, "Error: no to-dir specified and couldn't determing the default location.\n");
     goto failure;
   }
-  if (!fetchdeps_filesys_is_directory(to_dir)) {
+  if (!no_changes && !fetchdeps_filesys_is_directory(to_dir)) {
     fprintf(stderr, "Error: to-dir %s is not a directory, or is not writable.\n", to_dir);
     goto failure;
   }
