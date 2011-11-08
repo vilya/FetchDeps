@@ -1,4 +1,5 @@
 #include "common.h"
+#include "download.h"
 #include "filesys.h"
 #include "parse.h"
 #include "stringset.h"
@@ -65,7 +66,6 @@ failure:
 int
 main(int argc, char** argv)
 {
-  bool_t success;
   parser_t* ctx = NULL;
   stringset_t* urls = NULL;
 
