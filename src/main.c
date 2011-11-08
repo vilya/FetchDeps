@@ -66,6 +66,13 @@ failure:
 }
 
 
+void
+print_vars(varmap_t* vm)
+{
+  // TODO
+}
+
+
 int
 main(int argc, char** argv)
 {
@@ -176,6 +183,9 @@ main(int argc, char** argv)
     fprintf(stderr, "Error: unable to allocate memory for results\n");
     goto failure;
   }
+
+  if (verbose)
+    print_vars(ctx->vars);
 
   // Parse away!
   if (!fetchdeps_parser_parse(ctx, urls)) {
