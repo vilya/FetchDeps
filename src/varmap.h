@@ -11,9 +11,18 @@
 struct _varmap;
 typedef struct _varmap varmap_t;
 
+struct _variter;
+typedef struct _variter variter_t;
+
+struct _varentry {
+  char* name;
+  stringset_t* value;
+};
+typedef struct _varentry varentry_t;
+
 
 //
-// Functions
+// varmap_t functions
 //
 
 // Allocate a new empty varmap. This must eventually be freed with
@@ -71,6 +80,15 @@ bool_t fetchdeps_varmap_contains(varmap_t* vm, char* key);
 // would indicate a failure to allocate any extra memory needed by the
 // stringset).
 bool_t fetchdeps_varmap_add_value(varmap_t* vm, char* key, char* value);
+
+
+//
+// Iterator functions
+//
+
+variter_t* fetchdeps_variter_new(varmap_t* vm);
+void fetchdeps_variter_free(variter_t* iter);
+varentry_t fetchdeps_variter_next(variter_t* iter);
 
 #endif // fetchdeps_varmap_h
 

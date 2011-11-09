@@ -23,6 +23,12 @@ struct _varmap {
 };
 
 
+struct _variter {
+  varmap_t* vm;
+  size_t index;
+};
+
+
 //
 // varmap_t functions
 //
@@ -232,5 +238,59 @@ fetchdeps_varmap_add_value(varmap_t* vm, char* key, char* value)
   assert(ss != NULL);
 
   return fetchdeps_stringset_add(ss, value);
+}
+
+
+//
+// Iterator functions
+//
+
+variter_t*
+fetchdeps_variter_new(varmap_t* vm)
+{
+  variter_t* iter = NULL;
+
+  assert(vm != NULL);
+  assert(vm->size <= vm->capacity);
+  assert(vm->capacity > 0);
+  assert(vm->keys != NULL);
+  assert(vm->values != NULL);
+
+  iter = (variter_t*)malloc(sizeof(variter_t));
+  if (!iter)
+    return NULL;
+
+  iter->vm = vm;
+  iter->index = 0;
+
+  return iter;
+}
+
+
+void
+fetchdeps_variter_free(variter_t* iter)
+{
+  assert(iter != NULL);
+
+  free(iter);
+}
+
+
+varentry_t
+fetchdeps_variter_next(variter_t* iter)
+{
+  varentry_t result = { NULL, 0 };
+
+  assert(iter != NULL);
+  assert(iter->vm != NULL);
+
+  if (iter->index >= iter->vm->size)
+    return result;
+
+  result.name = iter->vm->keys[iter->index];
+  result.value = iter->vm->values[iter->index];
+  ++iter->index;
+
+  return result;
 }
 
