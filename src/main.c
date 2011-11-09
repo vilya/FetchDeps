@@ -5,6 +5,7 @@
 #include "parse.h"
 #include "stringset.h"
 
+#include <assert.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,7 +70,51 @@ failure:
 void
 print_vars(varmap_t* vm)
 {
-  // TODO
+  variter_t* iter = NULL;
+  stringiter_t* value_iter = NULL;
+  varentry_t entry;
+
+  assert(vm != NULL);
+
+  iter = fetchdeps_variter_new(vm);
+  if (!iter)
+    goto failure;
+
+  entry = fetchdeps_variter_next(iter);
+  while (entry.name) {
+    char* value;
+
+    printf("%s = ", entry.name);
+
+    value_iter = fetchdeps_stringiter_new(entry.value);
+    if (!value_iter)
+      goto failure;
+
+    value = fetchdeps_stringiter_next(value_iter);
+    if (value) {
+      printf("%s", value);
+      value = fetchdeps_stringiter_next(value_iter);
+      while (value) {
+        printf(", %s", value);
+        value = fetchdeps_stringiter_next(value_iter);
+      }
+    }
+
+    fetchdeps_stringiter_free(value_iter);
+    value_iter = NULL;
+
+    printf("\n");
+    entry = fetchdeps_variter_next(iter);
+  }
+
+  fetchdeps_variter_free(iter);
+  return;
+
+failure:
+  if (iter)
+    fetchdeps_variter_free(iter);
+  if (value_iter)
+    fetchdeps_stringiter_free(value_iter);
 }
 
 
