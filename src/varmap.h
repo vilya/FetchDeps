@@ -86,8 +86,23 @@ bool_t fetchdeps_varmap_add_value(varmap_t* vm, char* key, char* value);
 // Iterator functions
 //
 
+// Create a new iterator for the provided varmap. Changes to the varmap during
+// iteration will invalidate the iterator. The iterator must be freed eventually
+// using fetchdeps_variter_free().
 variter_t* fetchdeps_variter_new(varmap_t* vm);
+
+// Free an iterator which was created by fetchdeps_variter_new().
 void fetchdeps_variter_free(variter_t* iter);
+
+// Return the next entry from the varmap. Call this repeatedly to iterate over
+// the entire map. The return value will be a varentry_t struct with all members
+// zeroed when we reach the end of the map; the rest of the time it is the next
+// name string and associated stringset value.
+//
+// Note that the pointers in the returned varentry_t struct are pointers to the
+// strings abnd stringsets held by the varmap; we don't copy them before
+// returning them. As such you shouldn't try to free them yourself; nor should
+// you store them beyond the duration of the iteration.
 varentry_t fetchdeps_variter_next(variter_t* iter);
 
 #endif // fetchdeps_varmap_h
