@@ -16,7 +16,7 @@ typedef struct _stringiter stringiter_t;
 
 
 //
-// Functions
+// stringset_t functions
 //
 
 // Allocate a new empty stringset. This must eventually be freed with
@@ -78,7 +78,7 @@ bool_t fetchdeps_stringset_contains_any(stringset_t* haystack, stringset_t* need
 stringiter_t* fetchdeps_stringiter_new(stringset_t* ss);
 
 // Deallocate a stringset iterator.
-void fetchdeps_stringiter_free(stringiter_t* ss);
+void fetchdeps_stringiter_free(stringiter_t* iter);
 
 // Return the next string from the set. Call this repeatedly to iterate over
 // the entire set. The return value will be NULL when we reach the end of the
