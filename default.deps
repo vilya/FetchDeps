@@ -1,8 +1,12 @@
-https://svnserver:444/svn/Foundry/Thirdparty/scons-1.2.0.zip
-os "linux", "mac":
-  https://svnserver:444/svn/Foundry/Thirdparty/unixdeps-1.0-0.zip
-  bits "64": 
-    https://svnserver:444/svn/Foundry/Thirdparty/unixdeps-64bit-1.0-0.zip
+os "linux":
+  http://www.magicermine.com/demos/curl/curl/curl-7.21.7.ermine.tar.bz2
+
+os "mac" and bits "32":
+  http://pdb.finkproject.org/pdb/package.php/curl?rel_id=10.5-i386-0.9.0-bindist
+
 os "win":
-  https://svnserver:444/svn/Foundry/Thirdparty/windeps-1.0-0.zip
-https://svnserver:444/svn/Foundry/Thirdparty/quicktime-7.0.0.zip
+  bits "32":
+    http://www.paehl.com/open_source/?download=curl_722_0_ssl.zip
+  bits "64":
+    http://curl.haxx.se/download/curl-7.22.0-win64-ssl-sspi.zip
+
