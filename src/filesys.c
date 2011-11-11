@@ -1,6 +1,7 @@
 #include "filesys.h"
 
 #include "common.h"
+#include "errors.h"
 
 #include <assert.h>
 #include <dirent.h> // For opendir() and closedir().
@@ -83,6 +84,7 @@ fetchdeps_filesys_init(char* deps_file)
   return 1;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (file_path)
     free(file_path);
   if (dir_path)
@@ -133,6 +135,7 @@ fetchdeps_filesys_default_deps_file()
   return result;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (result)
     free(result);
   // Note: we don't free dirpath because dirname docs say not to.
@@ -170,6 +173,7 @@ fetchdeps_filesys_download_dir(char* deps_file)
   return download_path;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (file_path)
     free(file_path);
   if (dir_path)
@@ -185,7 +189,11 @@ fetchdeps_filesys_make_directory(char* path)
 {
   // Create a directory with read, write and execute permission for the current
   // user only.
-  return mkdir(path, 0700) == 0;
+  if (mkdir(path, 0700) == 0)
+    return 1;
+
+  fetchdeps_errors_trap_system_error();
+  return 0;
 }
 
 
@@ -231,6 +239,7 @@ fetchdeps_filesys_make_filepath(const char* dirpath, const char* filename)
   return filepath;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (filepath)
     free(filepath);
   return NULL;
