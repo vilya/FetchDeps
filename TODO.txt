@@ -4,10 +4,8 @@ To do
 - Extract tarballs, zip files, etc. after downloading.
 
 - Per-project configuration mechanism allowing customisation of where downloads
-  get stored; whether they all go to the same directory or a separate directory
-  per url; etc. Maybe use 'git config' settings for this?
-
-- Factor out the command-line handling code.
+  get extracted to; whether they all go to the same directory or a separate directory
+  per url; etc.
 
 - Subcommands:
   - init: initialise the deps setup for this project. Equivalent to git init,
