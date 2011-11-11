@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/errno.h>
 
 
 //
@@ -21,10 +22,11 @@
 // punctuation.
 static const char* ERRORS[] = {
   "no error",
-  "out of memory"
+  "system error"
 };
 
 
+//
 //
 // Global variables
 //
@@ -61,6 +63,16 @@ fetchdeps_errors_set_with_msg(error_t err, char* format, ...)
 
 
 void
+fetchdeps_errors_trap_system_error()
+{
+  if (fetchdeps_error == ERR_NONE && errno != 0) {
+    fetchdeps_error = ERR_SYSTEM;
+    memset(fetchdeps_errmsg, 0, sizeof(fetchdeps_errmsg));
+  }
+}
+
+
+void
 fetchdeps_errors_clear()
 {
   fetchdeps_error = ERR_NONE;
@@ -89,11 +101,10 @@ fetchdeps_errors_print(FILE* out)
   if (fetchdeps_error == ERR_NONE)
     return;
 
-  if (fetchdeps_errmsg[0] == '\0') {
-    fprintf(out, "Error: %s.\n", ERRORS[fetchdeps_error]);
-    return;
-  }
-
-  fprintf(out, "Error: %s; %s.\n", ERRORS[fetchdeps_error], fetchdeps_errmsg);
+  char* prefix = (fetchdeps_errmsg[0] != '\0') ? fetchdeps_errmsg : "Error";
+  if (fetchdeps_error == ERR_SYSTEM)
+    fprintf(out, "%s: %s\n", prefix, strerror(errno));
+  else
+    fprintf(out, "%s: %s\n", prefix, ERRORS[fetchdeps_error]);
 }
 

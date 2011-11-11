@@ -8,8 +8,8 @@
 //
 
 enum _error {
-  ERR_NONE,       // Not an error.
-  ERR_NO_MEMORY,  // Unable to allocate memory.
+  ERR_NONE,       // Not an error
+  ERR_SYSTEM      // A system error, with the system error code stored in errno
 };
 typedef enum _error error_t;
 
@@ -20,6 +20,7 @@ typedef enum _error error_t;
 
 void fetchdeps_errors_set(error_t err);
 void fetchdeps_errors_set_with_msg(error_t err, char* format, ...);
+void fetchdeps_errors_trap_system_error();
 void fetchdeps_errors_clear();
 
 error_t fetchdeps_errors_get();
