@@ -30,6 +30,7 @@ fetchdeps_cmdline_init(cmdline_t* options, int argc, char** argv)
   options->fname = NULL;
   options->verbose = 0;
   options->no_changes = 0;
+  options->action = ACTION_HELP;
 }
 
 
@@ -55,6 +56,21 @@ fetchdeps_cmdline_parse(cmdline_t* options)
     { "help",       no_argument,        NULL, 'h' },
     { NULL,         0,                  NULL, 0 }
   };
+  struct {
+    char* name;
+    action_t action;
+  } actions[] = {
+    { "help",       ACTION_HELP       },
+    { "init",       ACTION_INIT       },
+    { "get",        ACTION_GET        },
+    { "list",       ACTION_LIST       },
+    { "install",    ACTION_INSTALL    },
+    { "uninstall",  ACTION_UNINSTALL  },
+    { "delete",     ACTION_DELETE     },
+    { NULL,         ACTION_UNKNOWN    }
+  };
+
+  int i;
   char ch;
   exittype_t exit_type = NO_EXIT;
 
@@ -92,6 +108,17 @@ fetchdeps_cmdline_parse(cmdline_t* options)
 
   options->argc -= optind;
   options->argv += optind;
+
+  // Figure out which action we're doing.
+  if (options->argc > 0) {
+    for (i = 0; actions[i].name != NULL; ++i) {
+      if (strcmp(actions[i].name, options->argv[0]) == 0)
+        break;
+    }
+    options->action = actions[i].action;
+    if (options->action == ACTION_UNKNOWN)
+      exit_type = EXIT_FAIL;
+  }
 
   return exit_type;
 

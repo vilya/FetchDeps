@@ -18,6 +18,20 @@ enum _exittype {
 typedef enum _exittype exittype_t;
 
 
+enum _action {
+  ACTION_UNKNOWN,
+  ACTION_HELP,
+  ACTION_INIT,
+  ACTION_GET,
+  ACTION_LIST,
+  ACTION_INSTALL,
+  ACTION_UNINSTALL,
+  ACTION_DELETE
+};
+
+typedef enum _action action_t;
+
+
 struct _cmdline {
   int argc;
   char** argv;
@@ -27,6 +41,7 @@ struct _cmdline {
   char* fname;
   bool_t verbose;
   bool_t no_changes;
+  action_t action;
 };
 
 typedef struct _cmdline cmdline_t;
