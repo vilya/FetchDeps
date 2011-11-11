@@ -1,5 +1,7 @@
 #include "cmdline.h"
 
+#include "errors.h"
+
 #include <assert.h>
 #include <getopt.h>
 #include <stdlib.h>
@@ -79,14 +81,13 @@ fetchdeps_cmdline_parse(cmdline_t* options)
     switch (ch) {
     case 'f':
       if (options->fname) {
-        free(options->fname);
-        fprintf(stderr, "Warning: multiple deps files specified; "
-                        "all but the last will be ignored.\n");
+        fetchdeps_errors_set_with_msg(ERR_CMDLINE, "Multiple deps files specified, which confuses me");
+        exit_type = EXIT_FAIL;
       }
-      options->fname = strdup(optarg);
-      if (!options->fname) {
-        fprintf(stderr, "Error: too low on memory to proceed.\n");
-        goto failure;
+      else {
+        options->fname = strdup(optarg);
+        if (!options->fname)
+          exit_type = EXIT_FAIL;
       }
       break;
     case 'v':
@@ -100,12 +101,17 @@ fetchdeps_cmdline_parse(cmdline_t* options)
       exit_type = EXIT_OK;
       break;
     default:
-      fprintf(stderr, "Error: unknown option '%s'. %s -h for usage info.\n",
-              options->argv[optind], options->prog);
-      goto failure;
+      fetchdeps_errors_set_with_msg(ERR_CMDLINE, "Unknown option '%s'", options->argv[optind]);
+      exit_type = EXIT_FAIL;
       break;
     }
+
+    if (exit_type != NO_EXIT)
+      break;
   }
+
+  if (exit_type == EXIT_FAIL)
+    goto failure;
 
   options->argc -= optind;
   options->argv += optind;
@@ -118,14 +124,15 @@ fetchdeps_cmdline_parse(cmdline_t* options)
     }
     options->action = actions[i].action;
     if (options->action == ACTION_UNKNOWN) {
+      fetchdeps_errors_set_with_msg(ERR_CMDLINE, "Unknown action '%s'", options->argv[0]);
       exit_type = EXIT_FAIL;
-      fprintf(stderr, "Unknown command: %s\n", options->argv[0]);
     }
   }
 
   return exit_type;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   return EXIT_FAIL;
 }
 

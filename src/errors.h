@@ -10,7 +10,9 @@
 enum _error {
   ERR_NONE,       // Not an error
   ERR_SYSTEM,     // A system error, with the system error code stored in errno
-  ERR_PARSE       // A parsing error while reading the deps file.
+  ERR_PARSE,      // A parsing error while reading the deps file.
+  ERR_CMDLINE,    // An unknown option on the command line.
+  ERR_NO_DEPS,    // No deps file specified and couldn't find default deps file.
 };
 typedef enum _error error_t;
 

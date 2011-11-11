@@ -2,6 +2,7 @@
 #include "common.h"
 #include "download.h"
 #include "environ.h"
+#include "errors.h"
 #include "filesys.h"
 #include "parse.h"
 #include "stringset.h"
@@ -313,23 +314,23 @@ main(int argc, char** argv)
   cmdline_t options;
   exittype_t exit_type;
   parser_t* ctx = NULL;
-  stringset_t* urls = NULL;
-  char* to_dir = NULL;
   bool_t success = 0;
 
   // Parse the command line.
   fetchdeps_cmdline_init(&options, argc, argv);
   exit_type = fetchdeps_cmdline_parse(&options);
-  if (exit_type != NO_EXIT) {
+  if (exit_type == EXIT_FAIL)
+    goto failure;
+  if (exit_type == EXIT_OK) {
     fetchdeps_cmdline_cleanup(&options);
-    exit(exit_type);
+    exit(0);
   }
 
   // If no fname was given try to find the default deps file.
   if (!options.fname)
     options.fname = fetchdeps_filesys_default_deps_file();
   if (!options.fname) {
-    fprintf(stderr, "Error: no deps file specified and couldn't find default.deps\n");
+    fetchdeps_errors_set(ERR_NO_DEPS);
     goto failure;
   }
 
@@ -363,23 +364,18 @@ main(int argc, char** argv)
     break;
   }
 
-  if (!success) {
-    fprintf(stderr, "Action '%s' failed.\n", options.argv[0]);
+  if (!success)
     goto failure;
-  }
 
   // Clean up.
   fetchdeps_cmdline_cleanup(&options);
-
+  
   return 0;
 
 failure:
+  fetchdeps_errors_print(stderr);
   fetchdeps_cmdline_cleanup(&options);
-  if (to_dir)
-    free(to_dir);
   if (ctx)
     fetchdeps_parser_free(ctx);
-  if (urls)
-    fetchdeps_stringset_free(urls);
   return 1;
 }

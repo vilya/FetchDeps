@@ -23,7 +23,9 @@
 static const char* ERRORS[] = {
   "no error",
   "system error",
-  "parsing failed"
+  "parsing failed",
+  "use -h or --help to see usage information",
+  "no deps file specified and couldn't find default.deps"
 };
 
 
