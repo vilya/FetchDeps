@@ -13,6 +13,7 @@ enum _error {
   ERR_PARSE,      // A parsing error while reading the deps file.
   ERR_CMDLINE,    // An unknown option on the command line.
   ERR_NO_DEPS,    // No deps file specified and couldn't find default deps file.
+  ERR_NO_DIR,     // No working directory could be found.
 };
 typedef enum _error error_t;
 
