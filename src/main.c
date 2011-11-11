@@ -211,7 +211,48 @@ failure:
 bool_t
 list_action(cmdline_t* options)
 {
-  // TODO
+  parser_t* ctx = NULL;
+  stringset_t* urls = NULL;
+
+  assert(options != NULL);
+
+  // Set up for parsing.
+  ctx = fetchdeps_parser_new(options->fname);
+  if (!ctx) {
+    fprintf(stderr, "Error: unable to create parser for %s\n", options->fname);
+    goto failure;
+  }
+  if (!fetchdeps_environ_init_all_vars(ctx->vars, options->argv)) {
+    fprintf(stderr, "Error: unable to initialise variables for parsing\n");
+    goto failure;
+  }
+  urls = fetchdeps_stringset_new();
+  if (!urls) {
+    fprintf(stderr, "Error: unable to allocate memory for results\n");
+    goto failure;
+  }
+
+  // Parse away!
+  if (!fetchdeps_parser_parse(ctx, urls)) {
+    fprintf(stderr, "Error: parsing failed\n");
+    goto failure;
+  }
+  fetchdeps_parser_free(ctx);
+  ctx = NULL;
+
+  // Finished parsing, let's do something with the urls.
+  print_urls(urls);
+
+  // Cleanup
+  fetchdeps_stringset_free(urls);
+
+  return 1;
+
+failure:
+  if (ctx)
+    fetchdeps_parser_free(ctx);
+  if (urls)
+    fetchdeps_stringset_free(urls);
   return 0;
 }
 
