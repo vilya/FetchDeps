@@ -38,6 +38,7 @@ print_urls(stringset_t* urls)
   return;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (url_iter)
     fetchdeps_stringiter_free(url_iter);
 }
@@ -87,6 +88,7 @@ print_vars(varmap_t* vm)
   return;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (iter)
     fetchdeps_variter_free(iter);
   if (value_iter)
@@ -111,17 +113,13 @@ init_action(cmdline_t* options)
 
   // Locate the downloads directory.
   to_dir = fetchdeps_filesys_download_dir(options->fname);
-  if (!to_dir) {
-    fprintf(stderr, "Error: unable to locate download directory.\n");
+  if (!to_dir)
     goto failure;
-  }
 
   // Try to create the directories.
   if (!options->no_changes) {
-    if (!fetchdeps_filesys_init(options->fname)) {
-      fprintf(stderr, "Error: initialisation failed.\n");
+    if (!fetchdeps_filesys_init(options->fname))
       goto failure;
-    }
   }
 
   free(to_dir);
@@ -129,6 +127,7 @@ init_action(cmdline_t* options)
   return 1;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (to_dir)
     free(to_dir);
   return 0;
@@ -146,59 +145,45 @@ get_action(cmdline_t* options)
 
   // Locate the downloads directory.
   to_dir = fetchdeps_filesys_download_dir(options->fname);
-  if (!to_dir) {
-    fprintf(stderr, "Error: unable to locate download directory.\n");
+  if (!to_dir)
     goto failure;
-  }
 
   // Check that the downloads directory exists.
   if (!fetchdeps_filesys_is_directory(to_dir)) {
-    fprintf(stderr, "Error: download directory (%s) doesn't exist or is not "
-                    "writable. Do you need to run 'deps init'?\n", to_dir);
+    fetchdeps_errors_set_with_msg(ERR_NO_DIR, "Bad download directory (you may need to run 'deps init')");
     goto failure;
   }
 
   // Set up for parsing.
   ctx = fetchdeps_parser_new(options->fname);
-  if (!ctx) {
-    fprintf(stderr, "Error: unable to create parser for %s\n", options->fname);
+  if (!ctx)
     goto failure;
-  }
-  if (!fetchdeps_environ_init_all_vars(ctx->vars, options->argv)) {
-    fprintf(stderr, "Error: unable to initialise variables for parsing\n");
+  if (!fetchdeps_environ_init_all_vars(ctx->vars, options->argv))
     goto failure;
-  }
   urls = fetchdeps_stringset_new();
-  if (!urls) {
-    fprintf(stderr, "Error: unable to allocate memory for results\n");
+  if (!urls)
     goto failure;
-  }
 
   // Parse away!
-  if (!fetchdeps_parser_parse(ctx, urls)) {
-    fprintf(stderr, "Error: parsing failed\n");
+  if (!fetchdeps_parser_parse(ctx, urls))
     goto failure;
-  }
-  fetchdeps_parser_free(ctx);
-  ctx = NULL;
 
   // Finished parsing, let's do something with the urls.
-  if (options->no_changes) {
+  if (options->no_changes)
     print_urls(urls);
-  }
-  else if (!fetchdeps_download_fetch_all(urls, to_dir)) {
-    fprintf(stderr, "Error: download failed.\n");
+  else if (!fetchdeps_download_fetch_all(urls, to_dir))
     goto failure;
-  }
 
   // Cleanup
   if (to_dir)
     free(to_dir);
+  fetchdeps_parser_free(ctx);
   fetchdeps_stringset_free(urls);
 
   return 1;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (to_dir)
     free(to_dir);
   if (ctx)
@@ -219,37 +204,29 @@ list_action(cmdline_t* options)
 
   // Set up for parsing.
   ctx = fetchdeps_parser_new(options->fname);
-  if (!ctx) {
-    fprintf(stderr, "Error: unable to create parser for %s\n", options->fname);
+  if (!ctx)
     goto failure;
-  }
-  if (!fetchdeps_environ_init_all_vars(ctx->vars, options->argv)) {
-    fprintf(stderr, "Error: unable to initialise variables for parsing\n");
+  if (!fetchdeps_environ_init_all_vars(ctx->vars, options->argv))
     goto failure;
-  }
   urls = fetchdeps_stringset_new();
-  if (!urls) {
-    fprintf(stderr, "Error: unable to allocate memory for results\n");
+  if (!urls)
     goto failure;
-  }
 
   // Parse away!
-  if (!fetchdeps_parser_parse(ctx, urls)) {
-    fprintf(stderr, "Error: parsing failed\n");
+  if (!fetchdeps_parser_parse(ctx, urls))
     goto failure;
-  }
-  fetchdeps_parser_free(ctx);
-  ctx = NULL;
 
   // Finished parsing, let's do something with the urls.
   print_urls(urls);
 
   // Cleanup
+  fetchdeps_parser_free(ctx);
   fetchdeps_stringset_free(urls);
 
   return 1;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (ctx)
     fetchdeps_parser_free(ctx);
   if (urls)
@@ -302,6 +279,7 @@ vars_action(cmdline_t* options)
   return 1;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (vm)
     fetchdeps_varmap_free(vm);
   return 0;
