@@ -1,8 +1,6 @@
 To do
 -----
 
-- Set the 'bits' variable correctly for the system.
-
 - Extract tarballs, zip files, etc. after downloading.
 
 - Per-project configuration mechanism allowing customisation of where downloads
