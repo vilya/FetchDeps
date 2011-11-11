@@ -7,9 +7,18 @@ To do
   get stored; whether they all go to the same directory or a separate directory
   per url; etc. Maybe use 'git config' settings for this?
 
-- Subcommands for: listing all deps for current platform, listing deps which
-  are/aren't missing, downloading all (or a subset of) deps, removing a dep,
-  etc.
+- Factor out the command-line handling code.
+
+- Subcommands:
+  - init: initialise the deps setup for this project. Equivalent to git init,
+    creates directories & sets up initial config).
+  - list: list all the deps for the current platform. Should have flags for only
+    showing missing deps, only downloaded deps, etc.
+  - get: download all missing deps, replacing copies which come from a different
+    URL to that specified in the deps file.
+  - install: extract downloaded deps into their correct project locations.
+  - uninstall: delete any extracted deps files from the project.
+  - delete: clear out the downloads folder.
 
 - Before downloading, check that we won't end up with two or more URLs being
   downloaded to the same local file.
