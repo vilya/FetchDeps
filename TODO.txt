@@ -4,11 +4,21 @@ To do
 - Better error reporting. We handle errors gracefully at the moment, but don't
   tell the user what's gone wrong.
 
+- Update the grammar to include a relative path for URLs to be checked out
+  into. For example:
+
+    Thirdparty/IlmBase http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.2.tar.gz
+    Thirdparty/OpenEXR http://download.savannah.nongnu.org/releases/openexr/openexr-1.7.0.tar.gz
+
+  The relative path is also treated as a unique name for the download, so
+  changes to the URL will overwrite the existing download as long as the
+  relative path stays the same.
+
 - Extract tarballs, zip files, etc. after downloading.
 
 - Per-project configuration mechanism allowing customisation of where downloads
-  get extracted to; whether they all go to the same directory or a separate directory
-  per url; etc.
+  get extracted to; whether they all go to the same directory or a separate
+  directory per url; etc.
 
 - Subcommands:
   - list: list all the deps for the current platform. Should have flags for only

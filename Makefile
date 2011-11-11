@@ -17,6 +17,7 @@ OBJS = \
   $(OBJ)/cmdline.o \
   $(OBJ)/download.o \
   $(OBJ)/environ.o \
+  $(OBJ)/errors.o \
   $(OBJ)/filesys.o \
   $(OBJ)/main.o \
   $(OBJ)/parse.o \
@@ -28,7 +29,7 @@ OBJS = \
 default: dirs $(BIN)/deps
 
 $(BIN)/deps: $(OBJS)
-	$(LD) -o $@ $(LDFLAGS) $^
+	$(LD) -o $@ $^ $(LDFLAGS)
 
 $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) -o $@ -c $(CFLAGS) $<
