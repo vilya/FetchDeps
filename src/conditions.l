@@ -29,7 +29,7 @@ int yycolumn = 1;
 %x STRING
 
 VAR   [a-zA-Z_][a-zA-Z0-9_]*
-URL   ("http://"|"https://"|"file://")[a-zA-Z0-9./#:\-]+
+URL   ("http://"|"https://"|"file://")[a-zA-Z0-9./#:\-?=_]+
 
 NL    \n\r?" "*
 
