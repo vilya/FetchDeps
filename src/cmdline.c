@@ -67,6 +67,7 @@ fetchdeps_cmdline_parse(cmdline_t* options)
     { "install",    ACTION_INSTALL    },
     { "uninstall",  ACTION_UNINSTALL  },
     { "delete",     ACTION_DELETE     },
+    { "vars",       ACTION_VARS       },
     { NULL,         ACTION_UNKNOWN    }
   };
 
@@ -140,7 +141,7 @@ fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out)
   assert(out != NULL);
 
   fprintf(out,
-"Usage: %s [options] <command>\n"
+"Usage: %s [options] <command> [ var=value ... ]\n"
 "\n"
 "The <command> can be any of 'help', 'init', 'get', 'list', 'install',\n"
 "'uninstall' or 'delete'. %s help <command> will provide more detailed help\n"

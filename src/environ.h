@@ -8,6 +8,13 @@
 // Functions
 //
 
+// Perform all variable initialisation steps. This is equivalent to calling
+// fetchdeps_environ_default_vars, fetchdeps_environ_get_vars, then
+// fetchdeps_environ_parse_vars in that order. It is provided as a convenience.
+// The return value will be false if any of those three calls fails, or true if
+// they all succeeded.
+bool_t fetchdeps_environ_init_all_vars(varmap_t* vm, char** argv);
+
 // Store the default variables into the provided varmap. If the varmap already
 // contains entries with the same name as any of the default variables, they
 // will be replaced; other entries will be unaffected.

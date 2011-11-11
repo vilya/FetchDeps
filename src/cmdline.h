@@ -26,7 +26,8 @@ enum _action {
   ACTION_LIST,
   ACTION_INSTALL,
   ACTION_UNINSTALL,
-  ACTION_DELETE
+  ACTION_DELETE,
+  ACTION_VARS
 };
 
 typedef enum _action action_t;

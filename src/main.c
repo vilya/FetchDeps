@@ -163,16 +163,8 @@ get_action(cmdline_t* options)
     fprintf(stderr, "Error: unable to create parser for %s\n", options->fname);
     goto failure;
   }
-  if (!fetchdeps_environ_default_vars(ctx->vars)) {
+  if (!fetchdeps_environ_init_all_vars(ctx->vars, options->argv)) {
     fprintf(stderr, "Error: unable to initialise variables for parsing\n");
-    goto failure;
-  }
-  if (!fetchdeps_environ_get_vars(ctx->vars)) {
-    fprintf(stderr, "Error: unable to get variables from the environment\n");
-    goto failure;
-  }
-  if (!fetchdeps_environ_parse_vars(ctx->vars, options->argv)) {
-    fprintf(stderr, "Error: unable to get variables from the command line\n");
     goto failure;
   }
   urls = fetchdeps_stringset_new();
@@ -248,6 +240,32 @@ delete_action(cmdline_t* options)
 }
 
 
+bool_t
+vars_action(cmdline_t* options)
+{
+  varmap_t* vm = NULL;
+
+  assert(options != NULL);
+
+  vm = fetchdeps_varmap_new();
+  if (!vm)
+    goto failure;
+
+  if (!fetchdeps_environ_init_all_vars(vm, options->argv + 1))
+    goto failure;
+
+  print_vars(vm);
+
+  fetchdeps_varmap_free(vm);
+  return 1;
+
+failure:
+  if (vm)
+    fetchdeps_varmap_free(vm);
+  return 0;
+}
+
+
 int
 main(int argc, char** argv)
 {
@@ -295,6 +313,9 @@ main(int argc, char** argv)
     break;
   case ACTION_DELETE:
     success = delete_action(&options);
+    break;
+  case ACTION_VARS:
+    success = vars_action(&options);
     break;
   default:
     success = 0;

@@ -31,6 +31,22 @@ unsigned int fetchdeps_environ_bitsize();
 //
 
 bool_t
+fetchdeps_environ_init_all_vars(varmap_t* vm, char** argv)
+{
+  if (!fetchdeps_environ_default_vars(vm))
+    return 0;
+
+  if (!fetchdeps_environ_get_vars(vm))
+    return 0;
+
+  if (!fetchdeps_environ_parse_vars(vm, argv))
+    return 0;
+
+  return 1;
+}
+
+
+bool_t
 fetchdeps_environ_default_vars(varmap_t* vm)
 {
   char bits[10];
