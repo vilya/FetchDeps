@@ -197,12 +197,14 @@ main(int argc, char** argv)
   if (!to_dir)
     to_dir = fetchdeps_filesys_default_download_dir(fname);
   if (!to_dir) {
-    fprintf(stderr, "Error: no to-dir specified and couldn't determing the default location.\n");
+    fprintf(stderr, "Error: no to-dir specified and couldn't determine the default location.\n");
     goto failure;
   }
   if (!no_changes && !fetchdeps_filesys_is_directory(to_dir)) {
-    fprintf(stderr, "Error: to-dir %s is not a directory, or is not writable.\n", to_dir);
-    goto failure;
+    if (!fetchdeps_filesys_make_directory(to_dir)) {
+      fprintf(stderr, "Error: to-dir %s is not a directory, or is not writable.\n", to_dir);
+      goto failure;
+    }
   }
 
   // Set up for parsing.

@@ -33,6 +33,21 @@ char* fetchdeps_filesys_default_deps_file();
 // other error occurred.
 char* fetchdeps_filesys_default_download_dir(char* deps_file);
 
+// Create a directory with the given name. This assumes all the parent
+// directories already exist; the function will fail if they don't, rather than
+// attempting to create them.
+//
+// The return value indicates whether the function succeeded or failed. If it's
+// true, then the directory was created successfully. If it's false, the
+// directory couldn't be created because it's parent directory didn't exist, the
+// current user didn't have permission to create a directory in that location, a
+// directory with the same name for which the current user doesn't have read and
+// write permission already exists, or the path names a file.
+//
+// If the path is the name of an existing directory for which the user has read
+// and write permission, this function returns true without doing anything
+// further.
+bool_t fetchdeps_filesys_make_directory(char* path);
 
 #endif // fetchdeps_filesys_h
 

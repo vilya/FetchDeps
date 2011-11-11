@@ -9,6 +9,7 @@
 #include <stdio.h>  // For snprintf(), fopen(), etc.
 #include <stdlib.h> // For realpath(), malloc(), etc.
 #include <string.h> // For strcmp().
+#include <sys/stat.h> // for mkdir()
 #include <unistd.h> // for getcwd().
 
 
@@ -117,6 +118,15 @@ failure:
   if (download_path)
     free(download_path);
   return NULL;
+}
+
+
+bool_t
+fetchdeps_filesys_make_directory(char* path)
+{
+  // Create a directory with read, write and execute permission for the current
+  // user only.
+  return mkdir(path, 0700) == 0;
 }
 
 
