@@ -44,6 +44,10 @@ char* fetchdeps_filesys_default_deps_file();
 // The deps_file parameter may be an absolute or relative path, but must not be
 // NULL. The return value will be NULL if the deps_file doesn't exist or some
 // other error occurred.
+//
+// Note that for this method it doesn't matter whether the download directory
+// actually exists; it's just calculating the path to where the directory ought
+// to be.
 char* fetchdeps_filesys_download_dir(char* deps_file);
 
 // Create a directory with the given name. This assumes all the parent
