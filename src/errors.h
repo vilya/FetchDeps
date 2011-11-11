@@ -9,7 +9,8 @@
 
 enum _error {
   ERR_NONE,       // Not an error
-  ERR_SYSTEM      // A system error, with the system error code stored in errno
+  ERR_SYSTEM,     // A system error, with the system error code stored in errno
+  ERR_PARSE       // A parsing error while reading the deps file.
 };
 typedef enum _error error_t;
 

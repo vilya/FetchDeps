@@ -22,7 +22,8 @@
 // punctuation.
 static const char* ERRORS[] = {
   "no error",
-  "system error"
+  "system error",
+  "parsing failed"
 };
 
 

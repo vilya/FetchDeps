@@ -1,5 +1,6 @@
 #include "parse.h"
 
+#include "errors.h"
 #include "stringset.h"
 
 #include <assert.h>
@@ -44,6 +45,7 @@ fetchdeps_parser_new(char* fname)
   return ctx;
 
 failure:
+  fetchdeps_errors_trap_system_error();
   if (ctx) {
     if (ctx->f)
       fclose(ctx->f);

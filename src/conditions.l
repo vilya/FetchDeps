@@ -1,6 +1,7 @@
 /* Lex compound logical expressions. */
 
 %{
+#include "errors.h"
 #include "parse.h"
 #include "stringset.h"
 #include "varmap.h"
@@ -86,8 +87,12 @@ bool_t fetchdeps_parser_parse(parser_t* ctx, stringset_t* results)
   yyin = ctx->f;
   
   if (yyparse(results) != 0)
-    return 0;
+    goto failure;
   
   return 1;
+
+failure:
+  fetchdeps_errors_set(ERR_PARSE);
+  return 0;
 }
 
