@@ -56,7 +56,7 @@ fetchdeps_filesys_init(char* deps_file)
     goto failure;
 
   parent_path = dirname(file_path);
-  if (!dir_path)
+  if (!parent_path)
     goto failure;
   
   dir_path = fetchdeps_filesys_make_filepath(parent_path, DEPS_DIR);
