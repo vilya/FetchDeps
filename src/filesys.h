@@ -7,6 +7,19 @@
 // Functions
 //
 
+// Set up the directory structure used to keep track of the downloaded
+// dependencies. This is roughly equivalent to "git init" or "hg init". It
+// creates the ".deps" and ".deps/downloads" directories. If they already exist,
+// the function will fail.
+//
+// The deps_file parameter gives the path to the deps file for this project. The
+// .deps directory will be created with the same parent directory as that file.
+//
+// Returns true if the directories were created. If the directories already
+// existed or couldn't be created for some reason, it returns false. It will
+// also return false if the deps_file doesn't exist.
+bool_t fetchdeps_filesys_init(char* deps_file);
+
 // Check whether the given path is a directory. Returns true if it is; returns
 // false if the path doesn't exist, it isn't a directory, the current user has
 // insufficient permission to open the directory, or there was any other
@@ -31,7 +44,7 @@ char* fetchdeps_filesys_default_deps_file();
 // The deps_file parameter may be an absolute or relative path, but must not be
 // NULL. The return value will be NULL if the deps_file doesn't exist or some
 // other error occurred.
-char* fetchdeps_filesys_default_download_dir(char* deps_file);
+char* fetchdeps_filesys_download_dir(char* deps_file);
 
 // Create a directory with the given name. This assumes all the parent
 // directories already exist; the function will fail if they don't, rather than

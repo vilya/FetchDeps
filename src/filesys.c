@@ -18,8 +18,9 @@
 //
 
 static const char* DEFAULT_DEPSFILE = "default.deps";
-static const char* DEFAULT_DOWNLOADS_DIR = ".deps";
-
+static const char* DEPS_DIR = ".deps";
+static const char* DOWNLOADS_DIR = "downloads";
+static const char* DOWNLOADS_LIST = "urls.txt";
 static const char* ROOT_PATH = "/";
 
 
@@ -41,6 +42,56 @@ char* fetchdeps_filesys_make_filepath(const char* dirpath, const char* filename)
 //
 // Public functions
 //
+
+bool_t
+fetchdeps_filesys_init(char* deps_file)
+{
+  char* file_path = NULL;
+  char* parent_path = NULL;
+  char* dir_path = NULL;
+  char* download_path = NULL;
+
+  file_path = realpath(deps_file, NULL);
+  if (!file_path)
+    goto failure;
+
+  parent_path = dirname(file_path);
+  if (!dir_path)
+    goto failure;
+  
+  dir_path = fetchdeps_filesys_make_filepath(parent_path, DEPS_DIR);
+  if (!dir_path)
+    goto failure;
+
+  download_path = fetchdeps_filesys_make_filepath(dir_path, DOWNLOADS_DIR);
+  if (!download_path)
+    goto failure;
+
+  if (fetchdeps_filesys_is_directory(download_path))
+    goto failure;
+
+  if (!fetchdeps_filesys_make_directory(dir_path))
+    goto failure;
+
+  if (!fetchdeps_filesys_make_directory(download_path))
+    goto failure;
+
+  free(file_path);
+  free(dir_path);
+  free(download_path);
+
+  return 1;
+
+failure:
+  if (file_path)
+    free(file_path);
+  if (dir_path)
+    free(dir_path);
+  if (download_path)
+    free(download_path);
+  return 0;
+}
+
 
 bool_t
 fetchdeps_filesys_is_directory(char* path)
@@ -90,9 +141,10 @@ failure:
 
 
 char*
-fetchdeps_filesys_default_download_dir(char* deps_file)
+fetchdeps_filesys_download_dir(char* deps_file)
 {
   char* file_path = NULL;
+  char* parent_path = NULL;
   char* dir_path = NULL;
   char* download_path = NULL;
 
@@ -100,21 +152,28 @@ fetchdeps_filesys_default_download_dir(char* deps_file)
   if (!file_path)
     goto failure;
 
-  dir_path = dirname(file_path);
-  if (!dir_path)
+  parent_path = dirname(file_path);
+  if (!parent_path)
     goto failure;
   
-  download_path = fetchdeps_filesys_make_filepath(dir_path, DEFAULT_DOWNLOADS_DIR);
+  dir_path = fetchdeps_filesys_make_filepath(parent_path, DEPS_DIR);
+  if (!dir_path)
+    goto failure;
+
+  download_path = fetchdeps_filesys_make_filepath(dir_path, DOWNLOADS_DIR);
   if (!download_path)
     goto failure;
 
   free(file_path);
+  free(dir_path);
 
   return download_path;
 
 failure:
   if (file_path)
     free(file_path);
+  if (dir_path)
+    free(dir_path);
   if (download_path)
     free(download_path);
   return NULL;
