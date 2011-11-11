@@ -93,6 +93,129 @@ failure:
 }
 
 
+bool_t
+help_action(cmdline_t* options)
+{
+  // TODO
+  return 1;
+}
+
+
+bool_t
+init_action(cmdline_t* options)
+{
+  char* to_dir = NULL;
+
+  assert(options != NULL);
+
+  // Locate the downloads directory.
+  to_dir = fetchdeps_filesys_download_dir(options->fname);
+  if (!to_dir) {
+    fprintf(stderr, "Error: unable to locate download directory.\n");
+    goto failure;
+  }
+
+  // Try to create the directories.
+  if (!options->no_changes) {
+    if (!fetchdeps_filesys_init(options->fname)) {
+      fprintf(stderr, "Error: initialisation failed.\n");
+      goto failure;
+    }
+  }
+
+  free(to_dir);
+
+  return 1;
+
+failure:
+  if (to_dir)
+    free(to_dir);
+  return 0;
+}
+
+
+bool_t
+get_action(cmdline_t* options)
+{
+  char* to_dir = NULL;
+  parser_t* ctx = NULL;
+  stringset_t* urls = NULL;
+
+  assert(options != NULL);
+
+  // Locate the downloads directory.
+  to_dir = fetchdeps_filesys_download_dir(options->fname);
+  if (!to_dir) {
+    fprintf(stderr, "Error: unable to locate download directory.\n");
+    goto failure;
+  }
+
+  // Check that the downloads directory exists.
+  if (!fetchdeps_filesys_is_directory(to_dir)) {
+    fprintf(stderr, "Error: download directory (%s) doesn't exist or is not "
+                    "writable. Do you need to run 'deps init'?\n", to_dir);
+    goto failure;
+  }
+
+  // Set up for parsing.
+  ctx = fetchdeps_parser_new(options->fname);
+  if (!ctx) {
+    fprintf(stderr, "Error: unable to create parser for %s\n", options->fname);
+    goto failure;
+  }
+  if (!fetchdeps_environ_default_vars(ctx->vars)) {
+    fprintf(stderr, "Error: unable to initialise variables for parsing\n");
+    goto failure;
+  }
+  if (!fetchdeps_environ_get_vars(ctx->vars)) {
+    fprintf(stderr, "Error: unable to get variables from the environment\n");
+    goto failure;
+  }
+  if (!fetchdeps_environ_parse_vars(ctx->vars, options->argv)) {
+    fprintf(stderr, "Error: unable to get variables from the command line\n");
+    goto failure;
+  }
+  urls = fetchdeps_stringset_new();
+  if (!urls) {
+    fprintf(stderr, "Error: unable to allocate memory for results\n");
+    goto failure;
+  }
+
+  // Parse away!
+  if (!fetchdeps_parser_parse(ctx, urls)) {
+    fprintf(stderr, "Error: parsing failed\n");
+    goto failure;
+  }
+  fetchdeps_parser_free(ctx);
+  ctx = NULL;
+
+  // Finished parsing, let's do something with the urls.
+  if (options->no_changes) {
+    print_urls(urls);
+  }
+  else if (!fetchdeps_download_fetch_all(urls, to_dir)) {
+    fprintf(stderr, "Error: download failed.\n");
+    goto failure;
+  }
+
+  // Cleanup
+  if (to_dir)
+    free(to_dir);
+  fetchdeps_stringset_free(urls);
+
+  return 1;
+
+failure:
+  if (to_dir)
+    free(to_dir);
+  if (ctx)
+    fetchdeps_parser_free(ctx);
+  if (urls)
+    fetchdeps_stringset_free(urls);
+  return 0;
+}
+
+
 int
 main(int argc, char** argv)
 {
@@ -101,6 +224,7 @@ main(int argc, char** argv)
   parser_t* ctx = NULL;
   stringset_t* urls = NULL;
   char* to_dir = NULL;
+  bool_t success = 0;
 
   // Parse the command line.
   fetchdeps_cmdline_init(&options, argc, argv);
@@ -118,70 +242,31 @@ main(int argc, char** argv)
     goto failure;
   }
 
-  // Locate the downloads directory.
-  to_dir = fetchdeps_filesys_download_dir(options.fname);
-  if (!to_dir) {
-    fprintf(stderr, "Error: unable to locate download directory. "
-                    "Do you need to run 'deps init'?\n");
-    goto failure;
-  }
-  if (!options.no_changes && !fetchdeps_filesys_is_directory(to_dir)) {
-    fprintf(stderr, "Error: download directory (%s) doesn't exist or is not "
-                    "writable. Do you need to run 'deps init'?\n", to_dir);
-    goto failure;
-  }
-
-  // Set up for parsing.
-  ctx = fetchdeps_parser_new(options.fname);
-  if (!ctx) {
-    fprintf(stderr, "Error: unable to create parser for %s\n", options.fname);
-    goto failure;
-  }
-  if (!fetchdeps_environ_default_vars(ctx->vars)) {
-    fprintf(stderr, "Error: unable to initialise variables for parsing\n");
-    goto failure;
-  }
-  if (!fetchdeps_environ_get_vars(ctx->vars)) {
-    fprintf(stderr, "Error: unable to get variables from the environment\n");
-    goto failure;
-  }
-  if (!fetchdeps_environ_parse_vars(ctx->vars, argv)) {
-    fprintf(stderr, "Error: unable to get variables from the command line\n");
-    goto failure;
-  }
-  urls = fetchdeps_stringset_new();
-  if (!urls) {
-    fprintf(stderr, "Error: unable to allocate memory for results\n");
-    goto failure;
+  switch (options.action) {
+  case ACTION_HELP:
+    success = help_action(&options);
+    break;
+  case ACTION_INIT:
+    success = init_action(&options);
+    break;
+  case ACTION_GET:
+    success = get_action(&options);
+    break;
+  case ACTION_LIST:
+  case ACTION_INSTALL:
+  case ACTION_UNINSTALL:
+  case ACTION_DELETE:
+  default:
+    fprintf(stderr, "Action not implemented yet. Sorry!\n");
+    success = 0;
+    break;
   }
 
-  if (options.verbose)
-    print_vars(ctx->vars);
-
-  // Parse away!
-  if (!fetchdeps_parser_parse(ctx, urls)) {
-    fprintf(stderr, "Error: parsing failed\n");
+  if (!success)
     goto failure;
-  }
-  fetchdeps_parser_free(ctx);
-  ctx = NULL;
-
-  // Finished parsing, let's do something with the urls.
-  if (options.no_changes) {
-    print_urls(urls);
-  }
-  else {
-    if (!fetchdeps_download_fetch_all(urls, to_dir)) {
-      fprintf(stderr, "Error: download failed.\n");
-      goto failure;
-    }
-  }
 
   // Clean up.
   fetchdeps_cmdline_cleanup(&options);
-  if (to_dir)
-    free(to_dir);
-  fetchdeps_stringset_free(urls);
 
   return 0;
 
