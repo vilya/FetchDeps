@@ -17,7 +17,7 @@
 //
 
 static const char* DEFAULT_DEPSFILE = "default.deps";
-static const char* DEFAULT_DOWNLOADS_DIR = "Thirdparty";
+static const char* DEFAULT_DOWNLOADS_DIR = ".deps";
 
 static const char* ROOT_PATH = "/";
 

@@ -21,12 +21,16 @@ bool_t fetchdeps_filesys_is_directory(char* path);
 // If the file was not found, the return value is NULL.
 char* fetchdeps_filesys_default_deps_file();
 
-// Returns the default download directory: a directory called 'Thirdparty' in
-// the same directory as the deps_file. The deps_file parameter may be an
-// absolute or relative path, but must not be NULL.
+// Returns the default download directory. On Linux and OS X this is a
+// directory called ".deps" in the same directory as the deps_file. On Windows
+// it's currently the same but is likely to change to something more
+// appropriate for that platform in the future. You should always use this
+// function to get the directory name rather than relying on it having a
+// particular value.
 //
-// The return value will be NULL if the deps_file doesn't exist or some other
-// error occurred.
+// The deps_file parameter may be an absolute or relative path, but must not be
+// NULL. The return value will be NULL if the deps_file doesn't exist or some
+// other error occurred.
 char* fetchdeps_filesys_default_download_dir(char* deps_file);
 
 
