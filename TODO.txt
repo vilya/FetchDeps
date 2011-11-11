@@ -19,5 +19,7 @@ To do
 - Better error reporting. We handle errors gracefully at the moment, but don't
   tell the user what's gone wrong.
 
+- Make sure we don't download files we already have.
+
 - Windows support.
 
