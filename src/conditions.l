@@ -23,6 +23,7 @@ int yycolumn = 1;
 %}
 
 %option noyywrap
+%option nounput
 %option yylineno
 
 %x STRING
