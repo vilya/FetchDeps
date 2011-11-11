@@ -37,8 +37,10 @@ fetchdeps_parser_new(char* fname)
     goto failure;
 
   ctx->f = fopen(fname, "r");
-  if (!ctx->f)
+  if (!ctx->f) {
+    fetchdeps_errors_set_with_msg(ERR_SYSTEM, "Unable to open deps file %s", fname);
     goto failure;
+  }
 
   ctx->indent_level = 0;
 
