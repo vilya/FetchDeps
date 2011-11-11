@@ -216,6 +216,38 @@ failure:
 }
 
 
+bool_t
+list_action(cmdline_t* options)
+{
+  // TODO
+  return 0;
+}
+
+
+bool_t
+install_action(cmdline_t* options)
+{
+  // TODO
+  return 0;
+}
+
+
+bool_t
+uninstall_action(cmdline_t* options)
+{
+  // TODO
+  return 0;
+}
+
+
+bool_t
+delete_action(cmdline_t* options)
+{
+  // TODO
+  return 0;
+}
+
+
 int
 main(int argc, char** argv)
 {
@@ -253,17 +285,26 @@ main(int argc, char** argv)
     success = get_action(&options);
     break;
   case ACTION_LIST:
+    success = list_action(&options);
+    break;
   case ACTION_INSTALL:
+    success = install_action(&options);
+    break;
   case ACTION_UNINSTALL:
+    success = uninstall_action(&options);
+    break;
   case ACTION_DELETE:
+    success = delete_action(&options);
+    break;
   default:
-    fprintf(stderr, "Action not implemented yet. Sorry!\n");
     success = 0;
     break;
   }
 
-  if (!success)
+  if (!success) {
+    fprintf(stderr, "Action '%s' failed.\n", options.argv[0]);
     goto failure;
+  }
 
   // Clean up.
   fetchdeps_cmdline_cleanup(&options);
