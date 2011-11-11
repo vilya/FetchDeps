@@ -26,7 +26,8 @@ static const char* ERRORS[] = {
   "parsing failed",
   "use -h or --help to see usage information",
   "no deps file specified and couldn't find default.deps",
-  "directory doesn't exist or isn't writable"
+  "directory doesn't exist or isn't writable",
+  "not implemented yet - sorry!"
 };
 
 

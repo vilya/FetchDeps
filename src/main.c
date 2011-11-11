@@ -99,8 +99,8 @@ failure:
 bool_t
 help_action(cmdline_t* options)
 {
-  // TODO
-  return 1;
+  fetchdeps_errors_set_with_msg(ERR_NOT_IMPL, "'help' action");
+  return 0;
 }
 
 
@@ -238,7 +238,7 @@ failure:
 bool_t
 install_action(cmdline_t* options)
 {
-  // TODO
+  fetchdeps_errors_set_with_msg(ERR_NOT_IMPL, "'install' action");
   return 0;
 }
 
@@ -246,7 +246,7 @@ install_action(cmdline_t* options)
 bool_t
 uninstall_action(cmdline_t* options)
 {
-  // TODO
+  fetchdeps_errors_set_with_msg(ERR_NOT_IMPL, "'uninstall' action");
   return 0;
 }
 
@@ -254,7 +254,7 @@ uninstall_action(cmdline_t* options)
 bool_t
 delete_action(cmdline_t* options)
 {
-  // TODO
+  fetchdeps_errors_set_with_msg(ERR_NOT_IMPL, "'delete' action");
   return 0;
 }
 

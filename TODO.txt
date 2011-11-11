@@ -1,9 +1,6 @@
 To do
 -----
 
-- Better error reporting. We handle errors gracefully at the moment, but don't
-  tell the user what's gone wrong.
-
 - Update the grammar to include a relative path for URLs to be checked out
   into. For example:
 
@@ -21,8 +18,6 @@ To do
   directory per url; etc.
 
 - Subcommands:
-  - list: list all the deps for the current platform. Should have flags for only
-    showing missing deps, only downloaded deps, etc.
   - install: extract downloaded deps into their correct project locations.
   - uninstall: delete any extracted deps files from the project.
   - delete: clear out the downloads folder.

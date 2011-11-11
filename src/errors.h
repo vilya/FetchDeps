@@ -14,6 +14,7 @@ enum _error {
   ERR_CMDLINE,    // An unknown option on the command line.
   ERR_NO_DEPS,    // No deps file specified and couldn't find default deps file.
   ERR_NO_DIR,     // No working directory could be found.
+  ERR_NOT_IMPL    // Functionality which isn't implemented yet.
 };
 typedef enum _error error_t;
 
