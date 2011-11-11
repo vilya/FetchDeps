@@ -116,8 +116,10 @@ fetchdeps_cmdline_parse(cmdline_t* options)
         break;
     }
     options->action = actions[i].action;
-    if (options->action == ACTION_UNKNOWN)
+    if (options->action == ACTION_UNKNOWN) {
       exit_type = EXIT_FAIL;
+      fprintf(stderr, "Unknown command: %s\n", options->argv[0]);
+    }
   }
 
   return exit_type;
@@ -138,9 +140,13 @@ fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out)
   assert(out != NULL);
 
   fprintf(out,
-"Usage: %s [options]\n"
+"Usage: %s [options] <command>\n"
 "\n"
-"where [options] can be any combination of:\n"
+"The <command> can be any of 'help', 'init', 'get', 'list', 'install',\n"
+"'uninstall' or 'delete'. %s help <command> will provide more detailed help\n"
+"on a specific command.\n"
+"\n"
+"The [options] can be any combination of:\n"
 "\n"
 "-f, --file         Specify a deps file to use. If not specified we'll \n"
 "                   search for a file called 'default.deps' in the current\n"
@@ -156,6 +162,6 @@ fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out)
 "                   but show what would have been downloaded.\n"
 "\n"
 "-h, --help   Print this message and exit.\n"
-      , options->prog);
+      , options->prog, options->prog);
 }
 
