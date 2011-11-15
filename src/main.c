@@ -99,7 +99,22 @@ failure:
 bool_t
 help_action(cmdline_t* options)
 {
-  fetchdeps_errors_set_with_msg(ERR_NOT_IMPL, "'help' action");
+  action_t action;
+
+  assert(options != NULL);
+
+  if (options->argc <= 1) {
+    fetchdeps_cmdline_print_usage(options, stderr);
+    return 1;
+  }
+
+  action = fetchdeps_cmdline_lookup_action(options->argv[1]);
+  if (action == ACTION_UNKNOWN) {
+    fetchdeps_errors_set_with_msg(ERR_CMDLINE, "unknown action '%s'", options->argv[1]);
+    return 0;
+  }
+  
+  fetchdeps_errors_set_with_msg(ERR_NOT_IMPL, "help on action '%s'", options->argv[1]);
   return 0;
 }
 
