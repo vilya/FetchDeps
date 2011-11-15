@@ -114,7 +114,7 @@ help_action(cmdline_t* options)
     return 0;
   }
   
-  fetchdeps_errors_set_with_msg(ERR_NOT_IMPL, "help on action '%s'", options->argv[1]);
+  fetchdeps_cmdline_print_action_help(action, stderr);
   return 0;
 }
 
