@@ -19,7 +19,6 @@ typedef enum _exittype exittype_t;
 
 
 enum _action {
-  ACTION_UNKNOWN,
   ACTION_HELP,
   ACTION_INIT,
   ACTION_GET,
@@ -27,7 +26,8 @@ enum _action {
   ACTION_INSTALL,
   ACTION_UNINSTALL,
   ACTION_DELETE,
-  ACTION_VARS
+  ACTION_VARS,
+  ACTION_UNKNOWN,
 };
 
 typedef enum _action action_t;
@@ -57,7 +57,7 @@ void fetchdeps_cmdline_cleanup(cmdline_t* options);
 exittype_t fetchdeps_cmdline_parse(cmdline_t* options);
 
 void fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out);
-
+void fetchdeps_cmdline_print_action_help(action_t action, FILE* out);
 action_t fetchdeps_cmdline_lookup_action(char* action_name);
 
 #endif // fetchdeps_cmdline_h

@@ -26,6 +26,17 @@ static const struct {
   { "vars",       ACTION_VARS       },
   { NULL,         ACTION_UNKNOWN    }
 };
+static const char* ACTION_HELP_MSG[] = {
+  "ACTION_HELP",
+  "ACTION_INIT",
+  "ACTION_GET",
+  "ACTION_LIST",
+  "ACTION_INSTALL",
+  "ACTION_UNINSTALL",
+  "ACTION_DELETE",
+  "ACTION_VARS",
+  NULL,
+};
 
 
 //
@@ -157,6 +168,13 @@ fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out)
 "\n"
 "-h, --help   Print this message and exit.\n"
       , options->prog, options->prog);
+}
+
+
+void
+fetchdeps_cmdline_print_action_help(action_t action, FILE* out)
+{
+  fprintf(out, "%s\n", ACTION_HELP_MSG[action]);
 }
 
 
