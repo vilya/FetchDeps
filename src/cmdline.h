@@ -56,5 +56,9 @@ void fetchdeps_cmdline_init(cmdline_t* options, int argc, char** argv);
 void fetchdeps_cmdline_cleanup(cmdline_t* options);
 exittype_t fetchdeps_cmdline_parse(cmdline_t* options);
 
+void fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out);
+
+action_t fetchdeps_cmdline_lookup_action(char* action_name);
+
 #endif // fetchdeps_cmdline_h
 

@@ -9,10 +9,23 @@
 
 
 //
-// Forward declarations
+// Constants
 //
 
-void fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out);
+static const struct {
+  char* name;
+  action_t action;
+} ACTIONS[] = {
+  { "help",       ACTION_HELP       },
+  { "init",       ACTION_INIT       },
+  { "get",        ACTION_GET        },
+  { "list",       ACTION_LIST       },
+  { "install",    ACTION_INSTALL    },
+  { "uninstall",  ACTION_UNINSTALL  },
+  { "delete",     ACTION_DELETE     },
+  { "vars",       ACTION_VARS       },
+  { NULL,         ACTION_UNKNOWN    }
+};
 
 
 //
@@ -58,22 +71,7 @@ fetchdeps_cmdline_parse(cmdline_t* options)
     { "help",       no_argument,        NULL, 'h' },
     { NULL,         0,                  NULL, 0 }
   };
-  struct {
-    char* name;
-    action_t action;
-  } actions[] = {
-    { "help",       ACTION_HELP       },
-    { "init",       ACTION_INIT       },
-    { "get",        ACTION_GET        },
-    { "list",       ACTION_LIST       },
-    { "install",    ACTION_INSTALL    },
-    { "uninstall",  ACTION_UNINSTALL  },
-    { "delete",     ACTION_DELETE     },
-    { "vars",       ACTION_VARS       },
-    { NULL,         ACTION_UNKNOWN    }
-  };
 
-  int i;
   char ch;
   exittype_t exit_type = NO_EXIT;
 
@@ -118,11 +116,7 @@ fetchdeps_cmdline_parse(cmdline_t* options)
 
   // Figure out which action we're doing.
   if (options->argc > 0) {
-    for (i = 0; actions[i].name != NULL; ++i) {
-      if (strcmp(actions[i].name, options->argv[0]) == 0)
-        break;
-    }
-    options->action = actions[i].action;
+    options->action = fetchdeps_cmdline_lookup_action(options->argv[0]);
     if (options->action == ACTION_UNKNOWN) {
       fetchdeps_errors_set_with_msg(ERR_CMDLINE, "Unknown action '%s'", options->argv[0]);
       exit_type = EXIT_FAIL;
@@ -136,10 +130,6 @@ failure:
   return EXIT_FAIL;
 }
 
-
-//
-// Private functions
-//
 
 void
 fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out)
@@ -169,3 +159,18 @@ fetchdeps_cmdline_print_usage(cmdline_t* options, FILE* out)
       , options->prog, options->prog);
 }
 
+
+action_t
+fetchdeps_cmdline_lookup_action(char* action_name)
+{
+  int i;
+
+  assert(action_name != NULL);
+
+  for (i = 0; ACTIONS[i].name != NULL; ++i) {
+    if (strcmp(ACTIONS[i].name, action_name) == 0)
+      break;
+  }
+
+  return ACTIONS[i].action;
+}
