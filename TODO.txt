@@ -12,6 +12,10 @@ To do
   relative path stays the same.
 
 - Extract tarballs, zip files, etc. after downloading.
+  - Use zlib (http://zlib.net) for gzip support.
+  - Use bzlib (http://bzip.org) for bzip2 support.
+  - Use libzip (http://www.nih.at/libzip/) for zip file support.
+  - Implement tar file support - http://en.wikipedia.org/wiki/Tar_(file_format)
 
 - Per-project configuration mechanism allowing customisation of where downloads
   get extracted to; whether they all go to the same directory or a separate
