@@ -33,3 +33,9 @@ To do
 
 - Windows support.
 
+- Variable substitution into URLs? For example:
+
+    Thirdparty/MyLib http://mylibs.com/mylib-$(os)-$(bits)-1.2.3.tgz
+
+  Similar syntax to makefiles, i.e. $(varname). This gives a less redundant way
+  to specify libraries when the URLs are organised with it in mind.
